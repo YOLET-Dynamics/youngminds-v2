@@ -14,6 +14,21 @@ export function Navbar() {
   const isHomePage = pathname === "/";
 
   useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
         setIsScrolled(true);
@@ -29,7 +44,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 sm:px-6",
         isScrolled
           ? "bg-background/75 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 border-b border-border/40 shadow-sm"
           : isHomePage
@@ -37,7 +52,7 @@ export function Navbar() {
           : "bg-background border-b border-border/40 shadow-sm"
       )}
     >
-      <div className="flex items-center justify-between max-w-7xl mx-auto py-6">
+      <div className="flex items-center justify-between max-w-7xl mx-auto py-3 sm:py-4 md:py-6">
         <Link href="/" className="flex items-center gap-2">
           {isHomePage ? (
             <Image
@@ -45,7 +60,7 @@ export function Navbar() {
               alt="YoungMinds ET Logo"
               width={120}
               height={40}
-              className="h-16 w-auto md:h-28"
+              className="h-12 w-auto sm:h-16 md:h-28 transition-all"
               priority
             />
           ) : (
@@ -54,7 +69,7 @@ export function Navbar() {
               alt="YoungMinds ET Logo"
               width={120}
               height={40}
-              className="h-16 w-auto md:h-28"
+              className="h-12 w-auto sm:h-16 md:h-28 transition-all"
               priority
             />
           )}
@@ -100,47 +115,60 @@ export function Navbar() {
           variant="ghost"
           size="icon"
           className={cn(
-            "md:hidden",
-            isScrolled ? "text-foreground" : "text-white"
+            "md:hidden relative",
+            isScrolled || !isHomePage
+              ? "text-foreground hover:bg-foreground/10"
+              : "text-white hover:bg-white/10"
           )}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? (
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 transition-all duration-200" />
           ) : (
-            <Menu className="h-6 w-6" />
+            <Menu className="h-5 w-5 transition-all duration-200" />
           )}
           <span className="sr-only">Toggle menu</span>
         </Button>
       </div>
 
-      {isMenuOpen && (
-        <div className="md:hidden border-t border-border/40">
-          <nav className="flex flex-col space-y-4 py-6 px-4 bg-background/95 backdrop-blur-sm">
-            <Link
-              href="#initiatives"
-              className="text-base font-medium text-muted-foreground hover:text-primary transition-colors px-2 py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Initiatives
-            </Link>
-            <Link
-              href="#about"
-              className="text-base font-medium text-muted-foreground hover:text-primary transition-colors px-2 py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About Us
-            </Link>
-            <Button
-              asChild
-              className="bg-primary hover:bg-primary/90 text-white w-full"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Link href="/donate">Donate</Link>
-            </Button>
-          </nav>
-        </div>
-      )}
+      <div
+        className={cn(
+          "md:hidden fixed inset-x-0 top-[57px] sm:top-[65px] border-t border-border/40",
+          "transition-all duration-300 transform",
+          isMenuOpen
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-2 pointer-events-none"
+        )}
+      >
+        <nav className="flex flex-col space-y-2 py-4 px-4 bg-background/95 backdrop-blur-sm">
+          <Link
+            href="/initiatives"
+            className="text-base font-medium text-muted-foreground hover:text-primary 
+                     transition-colors px-3 py-2.5 rounded-lg active:scale-98
+                     hover:bg-foreground/5"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Initiatives
+          </Link>
+          <Link
+            href="/about"
+            className="text-base font-medium text-muted-foreground hover:text-primary 
+                     transition-colors px-3 py-2.5 rounded-lg active:scale-98
+                     hover:bg-foreground/5"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            About Us
+          </Link>
+          <Button
+            asChild
+            className="bg-primary hover:bg-primary/90 text-white w-full mt-2 
+                     h-11 text-base font-medium active:scale-98"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <Link href="/donate">Donate</Link>
+          </Button>
+        </nav>
+      </div>
     </header>
   );
 }
