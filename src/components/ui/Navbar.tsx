@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,44 +27,56 @@ export function Navbar() {
   }, []);
 
   return (
-    <header 
+    <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled 
-          ? "bg-background/75 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 border-b border-border/40" 
-          : "bg-transparent"
+        isScrolled
+          ? "bg-background/75 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 border-b border-border/40 shadow-sm"
+          : isHomePage
+          ? "bg-transparent"
+          : "bg-background border-b border-border/40 shadow-sm"
       )}
     >
-      <div className="flex items-center justify-between px-4 md:px-6 lg:px-20 py-6">
+      <div className="flex items-center justify-between max-w-7xl mx-auto py-6">
         <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo/logo-02-06.png"
-            alt="YoungMinds ET Logo"
-            width={120}
-            height={40}
-            className="h-16 w-auto md:h-28"
-            priority
-          />
+          {isHomePage ? (
+            <Image
+              src="/logo/logo-02-06.png"
+              alt="YoungMinds ET Logo"
+              width={120}
+              height={40}
+              className="h-16 w-auto md:h-28"
+              priority
+            />
+          ) : (
+            <Image
+              src="/logo/logo-02-04.png"
+              alt="YoungMinds ET Logo"
+              width={120}
+              height={40}
+              className="h-16 w-auto md:h-28"
+              priority
+            />
+          )}
         </Link>
-
         <nav className="hidden md:flex items-center space-x-16 lg:space-x-24">
           <Link
-            href="#initiatives"
+            href="/initiatives"
             className={cn(
               "relative text-base font-medium transition-colors after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:transition-all after:duration-300 hover:after:w-full",
-              isScrolled 
-                ? "text-foreground hover:text-primary after:bg-primary" 
+              isScrolled || !isHomePage
+                ? "text-foreground hover:text-primary after:bg-primary"
                 : "text-white/90 hover:text-white after:bg-white"
             )}
           >
             Initiatives
           </Link>
           <Link
-            href="#about"
+            href="/about"
             className={cn(
               "relative text-base font-medium transition-colors after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:transition-all after:duration-300 hover:after:w-full",
-              isScrolled 
-                ? "text-foreground hover:text-primary after:bg-primary" 
+              isScrolled || !isHomePage
+                ? "text-foreground hover:text-primary after:bg-primary"
                 : "text-white/90 hover:text-white after:bg-white"
             )}
           >
@@ -72,12 +87,12 @@ export function Navbar() {
             size="lg"
             className={cn(
               "px-8 transition-all",
-              isScrolled 
-                ? "bg-primary hover:bg-primary/90 text-white" 
+              isScrolled || !isHomePage
+                ? "bg-gradient-to-r from-slate-900 to-slate-700 hover:opacity-90 text-white"
                 : "bg-white text-primary hover:bg-white/90"
             )}
           >
-            <Link href="#donate">Donate</Link>
+            <Link href="/donate">Donate</Link>
           </Button>
         </nav>
 
@@ -121,7 +136,7 @@ export function Navbar() {
               className="bg-primary hover:bg-primary/90 text-white w-full"
               onClick={() => setIsMenuOpen(false)}
             >
-              <Link href="#donate">Donate</Link>
+              <Link href="/donate">Donate</Link>
             </Button>
           </nav>
         </div>

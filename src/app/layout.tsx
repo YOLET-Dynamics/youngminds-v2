@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/ui/Navbar";
+import Footer from "@/components/ui/Footer";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -9,7 +11,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "YoungMinds ET",
+  title: "YoungMinds ET Inc.",
   description: "Unlocking Potential One Student at a Time",
 };
 
@@ -21,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${dmSans.className} antialiased`}>
+        <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

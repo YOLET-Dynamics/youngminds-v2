@@ -44,7 +44,7 @@ export default function Hero() {
                          transition-all duration-200 shadow-lg hover:shadow-primary/25"
               asChild
             >
-              <Link href="#donate">Donate Now</Link>
+              <Link href="/donate">Donate Now</Link>
             </Button>
             <Button
               variant="outline"
@@ -53,7 +53,7 @@ export default function Hero() {
                          text-white rounded-lg backdrop-blur-sm transition-all duration-200"
               asChild
             >
-              <Link href="#about">Learn More</Link>
+              <Link href="/about">Learn More</Link>
             </Button>
           </div>
         </div>
