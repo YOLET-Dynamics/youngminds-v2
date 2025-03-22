@@ -97,7 +97,9 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 <div className="text-muted-foreground text-sm sm:text-base">
-                  <p className="font-medium text-foreground mb-0.5 sm:mb-1">US Office</p>
+                  <p className="font-medium text-foreground mb-0.5 sm:mb-1">
+                    US Office
+                  </p>
                   <p>Silver Spring</p>
                   <p>Maryland, USA</p>
                 </div>
@@ -107,7 +109,9 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 <div className="text-muted-foreground text-sm sm:text-base">
-                  <p className="font-medium text-foreground mb-0.5 sm:mb-1">Ethiopia Office</p>
+                  <p className="font-medium text-foreground mb-0.5 sm:mb-1">
+                    Ethiopia Office
+                  </p>
                   <p>Addis Ababa</p>
                   <p>Ethiopia</p>
                 </div>
@@ -120,6 +124,16 @@ export default function Footer() {
           <p>
             &copy; {new Date().getFullYear()} YoungMinds ET Inc. All rights
             reserved.
+          </p>
+          <p>
+            Built by{" "}
+            <Link
+              href="https://yoletent.com"
+              className="underline hover:text-primary transition-colors"
+              target="_blank"
+            >
+              YOLET Software Labs
+            </Link>
           </p>
         </div>
       </div>
