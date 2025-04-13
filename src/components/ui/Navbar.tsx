@@ -19,12 +19,12 @@ export function Navbar() {
 
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isMenuOpen]);
 
@@ -85,6 +85,17 @@ export function Navbar() {
             )}
           >
             Initiatives
+          </Link>
+          <Link
+            href="/join"
+            className={cn(
+              "relative text-base font-medium transition-colors after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:transition-all after:duration-300 hover:after:w-full",
+              isScrolled || !isHomePage
+                ? "text-foreground hover:text-primary after:bg-primary"
+                : "text-white/90 hover:text-white after:bg-white"
+            )}
+          >
+            Join Us
           </Link>
           <Link
             href="/about"
@@ -149,6 +160,15 @@ export function Navbar() {
             onClick={() => setIsMenuOpen(false)}
           >
             Initiatives
+          </Link>
+          <Link
+            href="/join"
+            className="text-base font-medium text-muted-foreground hover:text-primary 
+                     transition-colors px-3 py-2.5 rounded-lg active:scale-98
+                     hover:bg-foreground/5"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Join Us
           </Link>
           <Link
             href="/about"

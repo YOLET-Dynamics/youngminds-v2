@@ -54,7 +54,7 @@ export default function Hero() {
                        text-white rounded-lg backdrop-blur-sm transition-all duration-200 text-sm sm:text-base"
               asChild
             >
-              <Link href="/about">Learn More</Link>
+              <Link href="/join">Join Us</Link>
             </Button>
           </div>
         </div>

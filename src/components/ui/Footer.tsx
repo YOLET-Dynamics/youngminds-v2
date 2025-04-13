@@ -47,23 +47,27 @@ export default function Footer() {
           <div className="space-y-4 sm:space-y-6">
             <h3 className="text-base sm:text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-3 sm:space-y-4">
-              {["About Us", "Our Initiatives", "Donate"].map((item) => (
-                <li key={item}>
-                  <Link
-                    href={
-                      item === "About Us"
-                        ? "/about"
-                        : item === "Our Initiatives"
-                        ? "/initiatives"
-                        : "/donate"
-                    }
-                    className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group text-sm sm:text-base"
-                  >
-                    {item}
-                    <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                  </Link>
-                </li>
-              ))}
+              {["Our Initiatives", "Donate", "Join Us", "About Us"].map(
+                (item) => (
+                  <li key={item}>
+                    <Link
+                      href={
+                        item === "About Us"
+                          ? "/about"
+                          : item === "Our Initiatives"
+                          ? "/initiatives"
+                          : item === "Join Us"
+                          ? "/join"
+                          : "/donate"
+                      }
+                      className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group text-sm sm:text-base"
+                    >
+                      {item}
+                      <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
+                    </Link>
+                  </li>
+                )
+              )}
             </ul>
           </div>
 
