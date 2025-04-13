@@ -1,13 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowUpRight, HelpCircle } from "lucide-react";
 import InstagramIcon from "@/assets/instagram.svg";
 
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-b from-background to-muted/30 border-t">
       <div className="px-4 sm:px-8 md:px-16 py-12 sm:py-16 md:py-24">
-        <div className="grid gap-10 sm:gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 sm:gap-12 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start mb-6 gap-4 sm:gap-8">
               <Link href="/" className="inline-block">
@@ -55,10 +55,10 @@ export default function Footer() {
                         item === "About Us"
                           ? "/about"
                           : item === "Our Initiatives"
-                          ? "/initiatives"
-                          : item === "Join Us"
-                          ? "/join"
-                          : "/donate"
+                            ? "/initiatives"
+                            : item === "Join Us"
+                              ? "/join"
+                              : "/donate"
                       }
                       className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group text-sm sm:text-base"
                     >
@@ -68,6 +68,30 @@ export default function Footer() {
                   </li>
                 )
               )}
+            </ul>
+          </div>
+
+          <div className="space-y-4 sm:space-y-6">
+            <h3 className="text-base sm:text-lg font-semibold">Help</h3>
+            <ul className="space-y-3 sm:space-y-4">
+              <li>
+                <Link
+                  href="/subscriptions/manage"
+                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group text-sm sm:text-base"
+                >
+                  Manage Subscription
+                  <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="mailto:donations@youngmindset.org"
+                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group text-sm sm:text-base"
+                >
+                  Contact Support
+                  <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
+                </Link>
+              </li>
             </ul>
           </div>
 
