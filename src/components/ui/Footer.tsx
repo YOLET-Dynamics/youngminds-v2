@@ -92,6 +92,24 @@ export default function Footer() {
                   <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/privacy"
+                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group text-sm sm:text-base"
+                >
+                  Privacy Policy
+                  <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group text-sm sm:text-base"
+                >
+                  Terms of Service
+                  <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
+                </Link>
+              </li>
             </ul>
           </div>
 
