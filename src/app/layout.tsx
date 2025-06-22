@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 
-const dmSans = DM_Sans({
+const workSans = Work_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.className} antialiased`}>
+      <body className={`${workSans.className} antialiased`}>
         <Navbar />
         {children}
         <Footer />

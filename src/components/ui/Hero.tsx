@@ -57,6 +57,19 @@ export default function Hero() {
               <Link href="/join">Join Us</Link>
             </Button>
           </div>
+
+          <div className="mt-6">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto min-w-[200px] h-12 sm:h-14 border-2 border-[#22c55e] bg-transparent hover:bg-[#22c55e]/10 
+                       text-white font-medium rounded-lg transition-all duration-300 text-base sm:text-lg
+                       relative after:absolute after:inset-0 after:rounded-lg after:animate-pulse after:bg-[#22c55e]/20 after:-z-10
+                       shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]"
+              asChild
+            >
+              <Link href="/fund-the-future">Fund the Future</Link>
+            </Button>
+          </div>
         </div>
       </div>
 
