@@ -28,28 +28,38 @@ export default function FundTheFuture() {
   const [currentPage, setCurrentPage] = useState(1);
   const donationsPerPage = 5;
 
-  useEffect(() => {
-    async function fetchDonations() {
-      try {
+  const fetchDonations = async () => {
+    try {
+      // Only set loading true on initial fetch
+      if (donations.length === 0) {
         setIsLoading(true);
-        const response = await fetch("/api/donations");
-        if (!response.ok) {
-          throw new Error("Failed to fetch donation data.");
-        }
-        const data = await response.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
-        setTotalAmount(data.total);
-        setDonations(data.donations);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
       }
+      const response = await fetch("/api/donations");
+      if (!response.ok) {
+        throw new Error("Failed to fetch donation data.");
+      }
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      setTotalAmount(data.total);
+      setDonations(data.donations);
+      setError(null); // Clear previous errors
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    fetchDonations();
+  useEffect(() => {
+    fetchDonations(); // Initial fetch
+
+    const interval = setInterval(() => {
+      fetchDonations();
+    }, 30000); // Poll every 30 seconds
+
+    return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
 
   const progress = (totalAmount / goalAmount) * 100;
