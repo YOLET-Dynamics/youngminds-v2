@@ -1,8 +1,37 @@
+"use client";
+
 import { Button } from "./button";
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect, useCallback } from "react";
 
 export default function Hero() {
+  const [totalAmount, setTotalAmount] = useState<number | null>(null);
+
+  const fetchTotal = useCallback(async () => {
+    try {
+      const response = await fetch("/api/donations?totalOnly=true");
+      if (!response.ok) {
+        console.error("Failed to fetch donation total");
+        return;
+      }
+      const data = await response.json();
+      if (data.error) {
+        console.error("Error fetching donation total:", data.error);
+        return;
+      }
+      setTotalAmount(data.total);
+    } catch (err) {
+      console.error("Error fetching donation total:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTotal();
+    const interval = setInterval(fetchTotal, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval);
+  }, [fetchTotal]);
+
   return (
     <section className="relative w-full min-h-[100svh] flex items-center justify-center overflow-hidden py-16 sm:py-20">
       <div className="absolute inset-0 w-full h-full">
@@ -67,7 +96,23 @@ export default function Hero() {
                        shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]"
               asChild
             >
-              <Link href="/fund-the-future">Fund the Future</Link>
+              <Link href="/fund-the-future">
+                {totalAmount !== null ? (
+                  <span className="flex flex-col items-center">
+                    Fund the Future
+                    <span className="text-sm font-normal opacity-80 tracking-normal">
+                      $
+                      {totalAmount.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      Raised
+                    </span>
+                  </span>
+                ) : (
+                  "Fund the Future"
+                )}
+              </Link>
             </Button>
           </div>
         </div>

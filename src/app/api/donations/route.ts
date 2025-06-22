@@ -1,12 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
 });
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const totalOnly = searchParams.get("totalOnly") === "true";
+
     const paymentLinkId = process.env.STRIPE_PAYMENT_LINK_ID;
     if (!paymentLinkId) {
       throw new Error("Stripe Payment Link ID is not configured.");
@@ -22,7 +25,7 @@ export async function GET() {
           limit: 100,
           payment_link: paymentLinkId,
           starting_after: startingAfter,
-          expand: ["data.custom_fields"],
+          expand: totalOnly ? [] : ["data.custom_fields"],
         });
 
       allSessions = allSessions.concat(sessions.data);
@@ -41,33 +44,39 @@ export async function GET() {
         const amount = session.amount_total ?? 0;
         total += amount;
 
-        let donorName = session.customer_details?.name || "Anonymous";
-        const customFields = session.custom_fields || [];
-        const recognitionField = customFields.find(
-          (field) => field.key === "public_recognition"
-        );
+        if (!totalOnly) {
+          let donorName = session.customer_details?.name || "Anonymous";
+          const customFields = session.custom_fields || [];
+          const recognitionField = customFields.find(
+            (field) => field.key === "public_recognition"
+          );
 
-        if (
-          recognitionField?.dropdown?.value === "make_anonymous" ||
-          !session.customer_details?.name
-        ) {
-          donorName = "Anonymous";
+          if (
+            recognitionField?.dropdown?.value === "make_anonymous" ||
+            !session.customer_details?.name
+          ) {
+            donorName = "Anonymous";
+          }
+          donations.push({
+            id: session.id,
+            name: donorName,
+            email: session.customer_details?.email || "",
+            amount: amount / 100,
+            date: session.created * 1000,
+          });
         }
-
-        donations.push({
-          id: session.id,
-          name: donorName,
-          email: session.customer_details?.email || "",
-          amount: amount / 100,
-          date: session.created * 1000,
-        });
       }
     }
 
-    return NextResponse.json({
+    const responsePayload: { total: number; donations?: any[] } = {
       total: total / 100,
-      donations,
-    });
+    };
+
+    if (!totalOnly) {
+      responsePayload.donations = donations;
+    }
+
+    return NextResponse.json(responsePayload);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
