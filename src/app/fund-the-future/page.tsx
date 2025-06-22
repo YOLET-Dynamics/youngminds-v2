@@ -52,7 +52,7 @@ export default function FundTheFuture() {
       if (data.error) {
         throw new Error(data.error);
       }
-      
+
       setTotalAmount(data.total);
       setDonations(data.donations);
       setError(null);
@@ -66,10 +66,10 @@ export default function FundTheFuture() {
   }, []);
 
   useEffect(() => {
-    fetchDonations(true); // Initial fetch with loading state
+    fetchDonations(true);
 
     const interval = setInterval(() => {
-      fetchDonations(false); // Poll without loading state
+      fetchDonations(false);
     }, 30000);
 
     return () => clearInterval(interval);
@@ -101,8 +101,8 @@ export default function FundTheFuture() {
             Fund the Future
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Help us provide quality education to students in need. Your contribution
-            makes a direct impact on their future.
+            Help us provide quality education to students in need. Your
+            contribution makes a direct impact on their future.
           </p>
         </div>
 
@@ -142,7 +142,7 @@ export default function FundTheFuture() {
 
               <Button
                 size="lg"
-                className="w-full sm:w-auto min-w-[200px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-primary/40 transition-shadow duration-300"
+                className="w-full sm:w-auto min-w-[200px] border-2 border-[#22c55e] bg-transparent hover:bg-[#22c55e]/10 text-[#22c55e] font-medium rounded-lg transition-all duration-300 relative after:absolute after:inset-0 after:rounded-lg after:animate-pulse after:bg-[#22c55e]/20 after:-z-10 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]"
                 asChild
               >
                 <Link
@@ -242,4 +242,4 @@ export default function FundTheFuture() {
       </div>
     </div>
   );
-} 
+}

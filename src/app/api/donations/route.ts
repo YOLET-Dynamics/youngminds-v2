@@ -22,6 +22,7 @@ export async function GET() {
           limit: 100,
           payment_link: paymentLinkId,
           starting_after: startingAfter,
+          expand: ["data.custom_fields"],
         });
 
       allSessions = allSessions.concat(sessions.data);
@@ -39,9 +40,23 @@ export async function GET() {
       if (session.payment_status === "paid") {
         const amount = session.amount_total ?? 0;
         total += amount;
+
+        let donorName = session.customer_details?.name || "Anonymous";
+        const customFields = session.custom_fields || [];
+        const recognitionField = customFields.find(
+          (field) => field.key === "public_recognition"
+        );
+
+        if (
+          recognitionField?.dropdown?.value === "make_anonymous" ||
+          !session.customer_details?.name
+        ) {
+          donorName = "Anonymous";
+        }
+
         donations.push({
           id: session.id,
-          name: session.customer_details?.name || "Anonymous",
+          name: donorName,
           email: session.customer_details?.email || "",
           amount: amount / 100,
           date: session.created * 1000,
