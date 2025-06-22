@@ -168,7 +168,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              YOLET Software Labs
+              YOLET Labs
             </Link>
           </p>
         </div>
