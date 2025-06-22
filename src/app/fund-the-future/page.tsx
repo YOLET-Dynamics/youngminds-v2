@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -19,6 +19,17 @@ interface Donation {
   date: number;
 }
 
+const formatDonorName = (name: string) => {
+  if (!name || name.toLowerCase() === "anonymous") {
+    return "Anonymous";
+  }
+  const parts = name.trim().split(" ");
+  if (parts.length > 1) {
+    return `${parts[0]} ${parts[parts.length - 1].charAt(0)}.`;
+  }
+  return name;
+};
+
 export default function FundTheFuture() {
   const goalAmount = 650;
   const [totalAmount, setTotalAmount] = useState(0);
@@ -28,12 +39,11 @@ export default function FundTheFuture() {
   const [currentPage, setCurrentPage] = useState(1);
   const donationsPerPage = 5;
 
-  const fetchDonations = async () => {
+  const fetchDonations = useCallback(async (isInitialLoad = false) => {
+    if (isInitialLoad) {
+      setIsLoading(true);
+    }
     try {
-      // Only set loading true on initial fetch
-      if (donations.length === 0) {
-        setIsLoading(true);
-      }
       const response = await fetch("/api/donations");
       if (!response.ok) {
         throw new Error("Failed to fetch donation data.");
@@ -42,25 +52,28 @@ export default function FundTheFuture() {
       if (data.error) {
         throw new Error(data.error);
       }
+      
       setTotalAmount(data.total);
       setDonations(data.donations);
-      setError(null); // Clear previous errors
+      setError(null);
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setIsLoading(false);
+      if (isInitialLoad) {
+        setIsLoading(false);
+      }
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchDonations(); // Initial fetch
+    fetchDonations(true); // Initial fetch with loading state
 
     const interval = setInterval(() => {
-      fetchDonations();
-    }, 30000); // Poll every 30 seconds
+      fetchDonations(false); // Poll without loading state
+    }, 30000);
 
-    return () => clearInterval(interval); // Cleanup on component unmount
-  }, []);
+    return () => clearInterval(interval);
+  }, [fetchDonations]);
 
   const progress = (totalAmount / goalAmount) * 100;
 
@@ -129,7 +142,7 @@ export default function FundTheFuture() {
 
               <Button
                 size="lg"
-                className="w-full sm:w-auto min-w-[200px] bg-primary hover:bg-primary/90"
+                className="w-full sm:w-auto min-w-[200px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-primary/40 transition-shadow duration-300"
                 asChild
               >
                 <Link
@@ -152,11 +165,13 @@ export default function FundTheFuture() {
                   {currentDonations.map((donation) => (
                     <div
                       key={donation.id}
-                      className="bg-card/50 rounded-lg p-4 border border-border/50"
+                      className="bg-card/50 rounded-lg p-4 border border-border/50 transition-all duration-300"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <p className="font-medium">{donation.name}</p>
+                          <p className="font-medium">
+                            {formatDonorName(donation.name)}
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             {new Date(donation.date).toLocaleDateString()}
                           </p>
