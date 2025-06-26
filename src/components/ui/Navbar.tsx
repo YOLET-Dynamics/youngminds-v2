@@ -72,7 +72,7 @@ export function Navbar() {
           <nav className="hidden md:flex items-center space-x-8 lg:space-x-12">
             {[
               { href: "/initiatives", label: "Initiatives" },
-              { href: "/fund-the-future", label: "Fund the Future" },
+              { href: "/events", label: "Events" },
               { href: "/join", label: "Join Us" },
               { href: "/about", label: "About Us" },
             ].map(({ href, label }) => (
@@ -160,7 +160,7 @@ export function Navbar() {
         <nav className="relative h-full flex flex-col px-4 pt-6 pb-24 bg-background/50">
           {[
             { href: "/initiatives", label: "Initiatives" },
-            { href: "/fund-the-future", label: "Fund the Future" },
+            { href: "/events", label: "Events" },
             { href: "/join", label: "Join Us" },
             { href: "/about", label: "About Us" },
           ].map(({ href, label }, i) => (

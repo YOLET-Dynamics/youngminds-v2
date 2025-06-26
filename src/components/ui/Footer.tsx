@@ -54,8 +54,8 @@ export default function Footer() {
             <h3 className="text-base font-semibold mb-4 sm:mb-6">Quick Links</h3>
             <ul className="space-y-3">
               {[
-                { label: "Our Initiatives", href: "/initiatives" },
-                { label: "Fund the Future", href: "/fund-the-future" },
+                { label: "Initiatives", href: "/initiatives" },
+                { label: "Events", href: "/events" },
                 { label: "Donate", href: "/donate" },
                 { label: "Join Us", href: "/join" },
                 { label: "About Us", href: "/about" },
