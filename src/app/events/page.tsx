@@ -24,6 +24,15 @@ const events = [
     image: "/fund-the-future-banner.png",
     link: "/fund-the-future",
   },
+  {
+    title: "Matrimony Initiative",
+    description:
+      "An active fundraising effort beginning November 2, 2025 — ongoing. Join us in supporting students with essential educational resources and opportunities.",
+    status: "Active",
+    date: "Nov 2025 — Ongoing",
+    image: "/matrimony.png",
+    link: "/matrimony-initiative",
+  },
 ];
 
 export default function EventsPage() {
@@ -79,7 +88,7 @@ export default function EventsPage() {
                 <CardFooter className="p-0">
                   <Button asChild variant="link" className="group/link px-0">
                     <Link
-                      href={event.link}
+                      href={event.link || ""}
                       className="font-semibold text-primary"
                     >
                       Learn More

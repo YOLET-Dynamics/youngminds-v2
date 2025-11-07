@@ -71,6 +71,8 @@ export default function Initiatives() {
             </Link>
           </CardContent>
         </Card>
+
+        
       </div>
     </main>
   );

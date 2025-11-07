@@ -9,10 +9,34 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const totalOnly = searchParams.get("totalOnly") === "true";
+    const campaign = searchParams.get("campaign") || "default";
+    const sinceStr = searchParams.get("since"); // e.g. 2025-11-01 or ISO
+    const untilStr = searchParams.get("until"); // optional
 
-    const paymentLinkId = process.env.STRIPE_PAYMENT_LINK_ID;
-    if (!paymentLinkId) {
+    let paymentLinkId: string | undefined = undefined;
+    if (campaign === "matrimony") {
+      paymentLinkId = process.env.STRIPE_PAYMENT_LINK_ID_MATRIMONY;
+    } else if (campaign === "default") {
+      paymentLinkId = process.env.STRIPE_PAYMENT_LINK_ID;
+    }
+    if (campaign !== "all" && !paymentLinkId) {
       throw new Error("Stripe Payment Link ID is not configured.");
+    }
+
+    // Build created range filter if provided
+    let createdFilter: { gte?: number; lte?: number } | undefined = undefined;
+    const parseDateToUnix = (input: string) => {
+      const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(input);
+      const d = new Date(isDateOnly ? `${input}T00:00:00Z` : input);
+      if (isNaN(d.getTime())) return undefined;
+      return Math.floor(d.getTime() / 1000);
+    };
+    const sinceUnix = sinceStr ? parseDateToUnix(sinceStr) : undefined;
+    const untilUnix = untilStr ? parseDateToUnix(untilStr) : undefined;
+    if (sinceUnix || untilUnix) {
+      createdFilter = {};
+      if (sinceUnix) createdFilter.gte = sinceUnix;
+      if (untilUnix) createdFilter.lte = untilUnix;
     }
 
     let allSessions: Stripe.Checkout.Session[] = [];
@@ -23,8 +47,9 @@ export async function GET(req: NextRequest) {
       const sessions: Stripe.ApiList<Stripe.Checkout.Session> =
         await stripe.checkout.sessions.list({
           limit: 100,
-          payment_link: paymentLinkId,
+          ...(paymentLinkId ? { payment_link: paymentLinkId } : {}),
           starting_after: startingAfter,
+          ...(createdFilter ? { created: createdFilter as any } : {}),
           expand: totalOnly ? [] : ["data.custom_fields"],
         });
 
