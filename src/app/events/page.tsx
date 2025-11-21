@@ -27,9 +27,9 @@ const events = [
   {
     title: "Matrimony Initiative",
     description:
-      "An active fundraising effort beginning November 2, 2025 — ongoing. Join us in supporting students with essential educational resources and opportunities.",
-    status: "Active",
-    date: "Nov 2025 — Ongoing",
+      "A successful fundraising campaign that raised $641 to support students with essential educational resources and opportunities. Thanks to our amazing community for making this possible.",
+    status: "Completed",
+    date: "November 2025",
     image: "/matrimony.png",
     link: "/matrimony-initiative",
   },

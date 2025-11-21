@@ -39,42 +39,25 @@ export default function Hero() {
             opportunities, creating lasting change and brighter futures.
           </p>
 
-          <div className="w-full sm:w-auto mx-auto sm:inline-flex sm:flex-col sm:items-stretch">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 sm:pt-4 px-4 sm:px-0">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto min-w-[160px] h-10 sm:h-11 bg-primary hover:bg-primary/90 text-white rounded-lg 
-                         transition-all duration-200 shadow-lg hover:shadow-primary/25 text-sm sm:text-base"
-                asChild
-              >
-                <Link href="/donate">Donate Now</Link>
-              </Button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 sm:pt-4 px-4 sm:px-0">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto min-w-[160px] h-10 sm:h-11 bg-primary hover:bg-primary/90 text-white rounded-lg 
+                       transition-all duration-200 shadow-lg hover:shadow-primary/25 text-sm sm:text-base"
+              asChild
+            >
+              <Link href="/donate">Donate Now</Link>
+            </Button>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto min-w-[160px] h-10 sm:h-11 border-white/20 bg-white/10 hover:bg-white/20 
-                         text-white rounded-lg backdrop-blur-sm transition-all duration-200 text-sm sm:text-base"
-                asChild
-              >
-                <Link href="/join">Join Us</Link>
-              </Button>
-            </div>
-
-            <div className="w-full pt-2 sm:pt-3 px-4 sm:px-0">
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full h-11 sm:h-12 border-white/30 bg-white/5 hover:bg-white/10 
-                           text-white rounded-lg backdrop-blur-sm transition-all duration-200 
-                           ring-1 ring-emerald-400/25 hover:ring-emerald-400/40 
-                           shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:shadow-[0_0_30px_rgba(16,185,129,0.25)] 
-                           text-sm sm:text-base"
-                asChild
-              >
-                <Link href="/matrimony-initiative">Matrimony Initiative</Link>
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto min-w-[160px] h-10 sm:h-11 border-white/20 bg-white/10 hover:bg-white/20 
+                       text-white rounded-lg backdrop-blur-sm transition-all duration-200 text-sm sm:text-base"
+              asChild
+            >
+              <Link href="/join">Join Us</Link>
+            </Button>
           </div>
         </div>
       </div>
