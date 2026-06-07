@@ -16,7 +16,7 @@ export default function FundTheFuture() {
           <div className="lg:col-span-3">
             {/* Header Section */}
             <div className="text-center lg:text-left mb-12">
-              <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-600">
+              <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
                 We Funded the Future!
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0">
@@ -38,7 +38,7 @@ export default function FundTheFuture() {
                   </p>
                 </div>
                 <div className="text-right mt-4 sm:mt-0">
-                  <p className="text-3xl font-bold text-green-500">
+                  <p className="text-3xl font-bold text-primary">
                     ${totalAmount.toFixed(2)}
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -50,7 +50,7 @@ export default function FundTheFuture() {
               {/* Progress Bar */}
               <div className="h-4 bg-muted rounded-full overflow-hidden mb-6">
                 <div
-                  className="h-full bg-green-500 transition-all duration-500 rounded-full"
+                  className="h-full bg-primary transition-all duration-500 rounded-full"
                   style={{ width: `${progress}%` }}
                 />
               </div>

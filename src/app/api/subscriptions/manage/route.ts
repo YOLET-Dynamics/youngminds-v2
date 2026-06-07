@@ -1,32 +1,67 @@
 import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import {
+  buildAllowedOrigins,
+  getClientIp,
+  isAllowedOrigin,
+  parseJsonBody,
+  rateLimit,
+} from "@/lib/security";
+import {
+  buildSubscriptionManagementEmail,
+  subscriptionManagementSchema,
+} from "@/lib/forms";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(request: Request) {
+const maxBodyBytes = 10_000;
+const rateLimitMax = 5;
+const rateLimitWindowMs = 10 * 60 * 1000;
+
+export async function POST(
+  request: Request
+): Promise<NextResponse<{ success: true } | { error: string }>> {
   try {
-    const body = await request.json();
-    const { fullName, email, paymentMethod, reason } = body;
+    if (!isAllowedOrigin(request.headers.get("origin"), getAllowedOrigins(request))) {
+      return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
+    }
+
+    const clientIp = getClientIp(request.headers);
+    const limit = rateLimit(
+      `subscriptions:manage:${clientIp}`,
+      rateLimitMax,
+      rateLimitWindowMs
+    );
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(limit.retryAfterSeconds),
+          },
+        }
+      );
+    }
+
+    const body = await parseJsonBody(request, maxBodyBytes);
+    if (!body.ok) {
+      return NextResponse.json({ error: body.message }, { status: body.status });
+    }
+
+    const parsed = subscriptionManagementSchema.safeParse(body.value);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
+    const email = buildSubscriptionManagementEmail(parsed.data);
 
     await resend.emails.send({
       from: "no-reply@youngmindset.org",
       to: "subscriptions@youngmindset.org",
-      subject: "Subscription Management Request",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb; border-radius: 8px;">
-          <h1 style="color: #1e293b; text-align: center; margin-bottom: 24px;">Subscription Management Request</h1>
-          <div style="background-color: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <p style="margin-bottom: 16px;"><strong>Name:</strong> ${fullName}</p>
-            <p style="margin-bottom: 16px;"><strong>Email:</strong> ${email}</p>
-            <p style="margin-bottom: 16px;"><strong>Payment Method:</strong> ${paymentMethod}</p>
-            <div style="margin-top: 16px;">
-              <p style="margin-bottom: 8px;"><strong>Reason for Change:</strong></p>
-              <p style="background-color: #f8fafc; padding: 12px; border-radius: 4px; border-left: 4px solid #1e293b;">${reason}</p>
-            </div>
-          </div>
-          <p style="text-align: center; margin-top: 24px; color: #64748b; font-size: 14px;">This is an automated message from YoungMinds ET</p>
-        </div>
-      `,
+      subject: email.subject,
+      html: email.html,
+      text: email.text,
     });
 
     return NextResponse.json({ success: true });
@@ -37,4 +72,14 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+function getAllowedOrigins(request: Request): Set<string> {
+  const configuredOrigins = buildAllowedOrigins(process.env.SECURITY_ALLOWED_ORIGINS);
+
+  if (configuredOrigins.size > 0) {
+    return configuredOrigins;
+  }
+
+  return new Set([new URL(request.url).origin]);
 }

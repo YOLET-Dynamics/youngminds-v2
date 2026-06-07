@@ -14,7 +14,7 @@ export default function MatrimonyInitiativePage() {
           <div className="lg:col-span-3">
             {/* Header Section */}
             <div className="text-center lg:text-left mb-12">
-              <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-600">
+              <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
                 Matrimony Initiative Success!
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0">
@@ -36,7 +36,7 @@ export default function MatrimonyInitiativePage() {
                   </p>
                 </div>
                 <div className="text-right mt-4 sm:mt-0">
-                  <p className="text-3xl font-bold text-green-500">
+                  <p className="text-3xl font-bold text-primary">
                     ${totalAmount.toFixed(2)}
                   </p>
                   <p className="text-sm text-muted-foreground">
@@ -48,7 +48,7 @@ export default function MatrimonyInitiativePage() {
               {/* Progress Bar */}
               <div className="h-4 bg-muted rounded-full overflow-hidden mb-6">
                 <div
-                  className="h-full bg-green-500 transition-all duration-500 rounded-full"
+                  className="h-full bg-primary transition-all duration-500 rounded-full"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -76,7 +76,7 @@ export default function MatrimonyInitiativePage() {
           {/* Right Column: Visual Placeholder */}
           <div className="lg:col-span-2">
             <div className="sticky top-40">
-              <div className="w-full aspect-[16/9] rounded-lg shadow-xl bg-gradient-to-br from-emerald-700/15 to-green-600/15 border border-border/60 flex items-center justify-center">
+              <div className="w-full aspect-[16/9] rounded-lg shadow-xl bg-primary/5 border border-border/60 flex items-center justify-center">
                 <span className="text-muted-foreground">Campaign image coming soon</span>
               </div>
             </div>

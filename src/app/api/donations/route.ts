@@ -1,108 +1,75 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { parseDonationQuery } from "@/lib/donations";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
 });
 
-export async function GET(req: NextRequest) {
+type DonationsResponse = {
+  total: number;
+};
+
+const privateNoStoreHeaders = {
+  "Cache-Control": "private, no-store",
+};
+
+export async function GET(req: NextRequest): Promise<NextResponse<DonationsResponse | { error: string }>> {
   try {
     const { searchParams } = new URL(req.url);
-    const totalOnly = searchParams.get("totalOnly") === "true";
-    const campaign = searchParams.get("campaign") || "default";
-    const sinceStr = searchParams.get("since"); // e.g. 2025-11-01 or ISO
-    const untilStr = searchParams.get("until"); // optional
 
-    let paymentLinkId: string | undefined = undefined;
-    if (campaign === "matrimony") {
-      paymentLinkId = process.env.STRIPE_PAYMENT_LINK_ID_MATRIMONY;
-    } else if (campaign === "default") {
-      paymentLinkId = process.env.STRIPE_PAYMENT_LINK_ID;
+    const query = parseDonationQuery(searchParams);
+    if (!query.ok) {
+      return NextResponse.json(
+        { error: query.message },
+        { status: query.status, headers: privateNoStoreHeaders }
+      );
     }
-    if (campaign !== "all" && !paymentLinkId) {
+
+    const paymentLinkId = process.env[query.value.paymentLinkEnvName];
+    if (!paymentLinkId) {
       throw new Error("Stripe Payment Link ID is not configured.");
     }
 
-    // Build created range filter if provided
-    let createdFilter: { gte?: number; lte?: number } | undefined = undefined;
-    const parseDateToUnix = (input: string) => {
-      const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(input);
-      const d = new Date(isDateOnly ? `${input}T00:00:00Z` : input);
-      if (isNaN(d.getTime())) return undefined;
-      return Math.floor(d.getTime() / 1000);
-    };
-    const sinceUnix = sinceStr ? parseDateToUnix(sinceStr) : undefined;
-    const untilUnix = untilStr ? parseDateToUnix(untilStr) : undefined;
-    if (sinceUnix || untilUnix) {
-      createdFilter = {};
-      if (sinceUnix) createdFilter.gte = sinceUnix;
-      if (untilUnix) createdFilter.lte = untilUnix;
-    }
-
-    let allSessions: Stripe.Checkout.Session[] = [];
+    let pageCount = 0;
     let hasMore = true;
     let startingAfter: string | undefined = undefined;
+    let total = 0;
 
-    while (hasMore) {
+    while (hasMore && pageCount < query.value.maxPages) {
       const sessions: Stripe.ApiList<Stripe.Checkout.Session> =
         await stripe.checkout.sessions.list({
           limit: 100,
-          ...(paymentLinkId ? { payment_link: paymentLinkId } : {}),
+          payment_link: paymentLinkId,
           starting_after: startingAfter,
-          ...(createdFilter ? { created: createdFilter as any } : {}),
-          expand: totalOnly ? [] : ["data.custom_fields"],
+          ...(query.value.createdFilter ? { created: query.value.createdFilter } : {}),
         });
 
-      allSessions = allSessions.concat(sessions.data);
+      for (const session of sessions.data) {
+        if (session.payment_status === "paid") {
+          total += session.amount_total ?? 0;
+        }
+      }
+
       hasMore = sessions.has_more;
+      pageCount += 1;
 
       if (hasMore && sessions.data.length > 0) {
         startingAfter = sessions.data[sessions.data.length - 1].id;
+      } else {
+        hasMore = false;
       }
     }
 
-    const donations = [];
-    let total = 0;
-
-    for (const session of allSessions) {
-      if (session.payment_status === "paid") {
-        const amount = session.amount_total ?? 0;
-        total += amount;
-
-        if (!totalOnly) {
-          let donorName = session.customer_details?.name || "Anonymous";
-          const customFields = session.custom_fields || [];
-          const recognitionField = customFields.find(
-            (field) => field.key === "public_recognition"
-          );
-
-          if (
-            recognitionField?.dropdown?.value === "make_anonymous" ||
-            !session.customer_details?.name
-          ) {
-            donorName = "Anonymous";
-          }
-          donations.push({
-            id: session.id,
-            name: donorName,
-            email: session.customer_details?.email || "",
-            amount: amount / 100,
-            date: session.created * 1000,
-          });
-        }
-      }
-    }
-
-    const responsePayload: { total: number; donations?: any[] } = {
-      total: total / 100,
-    };
-
-    if (!totalOnly) {
-      responsePayload.donations = donations;
-    }
-
-    return NextResponse.json(responsePayload);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { total: total / 100 },
+      { headers: privateNoStoreHeaders }
+    );
+  } catch (error) {
+    console.error("Failed to load donation totals:", error);
+    return NextResponse.json(
+      { error: "Failed to load donation totals" },
+      { status: 500, headers: privateNoStoreHeaders }
+    );
   }
 }

@@ -2,11 +2,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { QRCodeDialog } from "@/components/QRCodeDialog";
+import { stripeLinks } from "@/lib/stripe-links";
 
 export const metadata = {
-  title: "Subscribe | YoungMinds ET",
+  title: "Subscribe",
   description:
     "Support education in Ethiopia through monthly donations. Choose from different subscription tiers to make a lasting impact.",
+  alternates: { canonical: "/donate/subscribe" },
 };
 
 export default function SubscribePage() {
@@ -17,17 +19,18 @@ export default function SubscribePage() {
     >
       <div className="text-left mb-8 sm:mb-12 md:mb-16 space-y-3 sm:space-y-4 w-full">
         <h1
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold 
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold
                     tracking-tight leading-tight"
         >
-          Subscribe to our cause
+          Become a Monthly Supporter
         </h1>
         <p
-          className="text-base sm:text-lg text-muted-foreground 
+          className="text-base sm:text-lg text-muted-foreground
                    max-w-2xl leading-relaxed"
         >
-          Your subscription will help us provide underserved students with
-          access to quality education in a sustainable way.
+          A monthly gift gives students in Ethiopia steady, reliable access to
+          quality education. Choose the level that's right for you—change or
+          cancel anytime.
         </p>
       </div>
 
@@ -50,28 +53,27 @@ export default function SubscribePage() {
           <CardContent className="flex flex-col flex-1">
             <div className="flex-1">
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Your monthly gift of $3 can help contribute to basic educational
-                needs for a student.
+                Helps cover everyday classroom essentials—pens, paper, and
+                notebooks—for a student.
               </p>
             </div>
             <div className="flex items-center mt-6">
               <Link
-                href="https://donate.stripe.com/28EfZhbxF6JH2kKdXMdjO0d"
+                href={stripeLinks.subscriptions.beginner}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="flex-1"
               >
                 <Button
-                  className="w-full bg-gradient-to-r from-slate-900 to-slate-700 
-                              hover:opacity-90 text-white py-2 px-4 h-10 sm:h-11
-                              text-sm sm:text-base font-medium
-                              active:scale-98 transition-all duration-200"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-4 h-10 sm:h-11
+                              text-sm sm:text-base font-medium transition-all duration-200"
                 >
                   Subscribe Now
                 </Button>
               </Link>
               <QRCodeDialog
-                url="https://donate.stripe.com/28EfZhbxF6JH2kKdXMdjO0d"
-                title="Subscribe to Basic Support"
+                url={stripeLinks.subscriptions.beginner}
+                title="Subscribe to Beginner Support"
               />
             </div>
           </CardContent>
@@ -92,27 +94,26 @@ export default function SubscribePage() {
           <CardContent className="flex flex-col flex-1">
             <div className="flex-1">
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Your monthly gift of $10 can help provide basic school supplies
-                to a child in need.
+                Provides a student with the basic school supplies they need for
+                the months ahead.
               </p>
             </div>
             <div className="flex items-center mt-6">
               <Link
-                href="https://donate.stripe.com/eVaeVp84O3yYcqk5ks"
+                href={stripeLinks.subscriptions.basic}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="flex-1"
               >
                 <Button
-                  className="w-full bg-gradient-to-r from-slate-900 to-slate-700 
-                              hover:opacity-90 text-white py-2 px-4 h-10 sm:h-11
-                              text-sm sm:text-base font-medium
-                              active:scale-98 transition-all duration-200"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-4 h-10 sm:h-11
+                              text-sm sm:text-base font-medium transition-all duration-200"
                 >
                   Subscribe Now
                 </Button>
               </Link>
               <QRCodeDialog
-                url="https://donate.stripe.com/eVaeVp84O3yYcqk5ks"
+                url={stripeLinks.subscriptions.basic}
                 title="Subscribe to Basic Support"
               />
             </div>
@@ -135,27 +136,26 @@ export default function SubscribePage() {
           <CardContent className="flex flex-col flex-1">
             <div className="flex-1">
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Your monthly gift of $25 can help provide textbooks and learning
-                materials to students.
+                Equips a student with textbooks and the learning materials that
+                keep them progressing.
               </p>
             </div>
             <div className="flex items-center mt-6">
               <Link
-                href="https://donate.stripe.com/7sI4gLgBk8TieyscMV"
+                href={stripeLinks.subscriptions.regular}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="flex-1"
               >
                 <Button
-                  className="w-full bg-gradient-to-r from-slate-900 to-slate-700 
-                              hover:opacity-90 text-white py-2 px-4 h-10 sm:h-11
-                              text-sm sm:text-base font-medium
-                              active:scale-98 transition-all duration-200"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-4 h-10 sm:h-11
+                              text-sm sm:text-base font-medium transition-all duration-200"
                 >
                   Subscribe Now
                 </Button>
               </Link>
               <QRCodeDialog
-                url="https://donate.stripe.com/7sI4gLgBk8TieyscMV"
+                url={stripeLinks.subscriptions.regular}
                 title="Subscribe to Regular Support"
               />
             </div>
@@ -178,27 +178,26 @@ export default function SubscribePage() {
           <CardContent className="flex flex-col flex-1">
             <div className="flex-1">
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Your monthly gift of $50 can help provide comprehensive
-                educational support to multiple students.
+                Funds ongoing, comprehensive educational support for multiple
+                students each month.
               </p>
             </div>
             <div className="flex items-center mt-6">
               <Link
-                href="https://donate.stripe.com/14k14z2Ku3yY1LG8wG"
+                href={stripeLinks.subscriptions.champion}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="flex-1"
               >
                 <Button
-                  className="w-full bg-gradient-to-r from-slate-900 to-slate-700 
-                              hover:opacity-90 text-white py-2 px-4 h-10 sm:h-11
-                              text-sm sm:text-base font-medium
-                              active:scale-98 transition-all duration-200"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-4 h-10 sm:h-11
+                              text-sm sm:text-base font-medium transition-all duration-200"
                 >
                   Subscribe Now
                 </Button>
               </Link>
               <QRCodeDialog
-                url="https://donate.stripe.com/14k14z2Ku3yY1LG8wG"
+                url={stripeLinks.subscriptions.champion}
                 title="Subscribe to Champion Support"
               />
             </div>

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,14 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-
-const formSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
+import { joinSubmissionSchema, type JoinSubmission } from "@/lib/forms";
 
 export default function JoinPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -34,8 +26,8 @@ export default function JoinPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<JoinSubmission>({
+    resolver: zodResolver(joinSubmissionSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -45,7 +37,7 @@ export default function JoinPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: JoinSubmission): Promise<void> {
     try {
       setIsLoading(true);
       setError(null);
@@ -87,7 +79,7 @@ export default function JoinPage() {
     <main className="flex min-h-screen flex-col items-center px-4 sm:px-6 md:px-8 py-16 sm:py-20 md:py-24 max-w-7xl mx-auto mt-16 sm:mt-24 md:mt-32">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             Join Our Mission
           </h1>
           <p className="text-muted-foreground">
@@ -120,7 +112,7 @@ export default function JoinPage() {
                   damping: 15,
                   delay: 0.2,
                 }}
-                className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center"
+                className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center"
               >
                 <motion.svg
                   initial={{ pathLength: 0 }}
@@ -130,7 +122,7 @@ export default function JoinPage() {
                     ease: "easeInOut",
                     delay: 0.5,
                   }}
-                  className="w-10 h-10 text-green-600"
+                  className="w-10 h-10 text-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -152,8 +144,8 @@ export default function JoinPage() {
               >
                 <h2 className="text-2xl font-semibold">Thank You!</h2>
                 <p className="text-muted-foreground">
-                  Your application has been submitted successfully. We'll get
-                  back to you soon.
+                  We've received your request to join our mission. We'll be in
+                  touch soon.
                 </p>
               </motion.div>
 
@@ -183,9 +175,14 @@ export default function JoinPage() {
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>First Name</FormLabel>
+                          <FormLabel>
+                            First Name{" "}
+                            <span aria-hidden="true" className="text-destructive">
+                              *
+                            </span>
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="John" {...field} />
+                            <Input placeholder="John" aria-required="true" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -196,9 +193,14 @@ export default function JoinPage() {
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Last Name</FormLabel>
+                          <FormLabel>
+                            Last Name{" "}
+                            <span aria-hidden="true" className="text-destructive">
+                              *
+                            </span>
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="Doe" {...field} />
+                            <Input placeholder="Doe" aria-required="true" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -211,9 +213,21 @@ export default function JoinPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>
+                          Email{" "}
+                          <span aria-hidden="true" className="text-destructive">
+                            *
+                          </span>
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder="john@example.com" {...field} />
+                          <Input
+                            type="email"
+                            inputMode="email"
+                            autoComplete="email"
+                            placeholder="john@example.com"
+                            aria-required="true"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -225,9 +239,21 @@ export default function JoinPage() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>
+                          Phone Number{" "}
+                          <span aria-hidden="true" className="text-destructive">
+                            *
+                          </span>
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder="+1 (555) 000-0000" {...field} />
+                          <Input
+                            type="tel"
+                            inputMode="tel"
+                            autoComplete="tel"
+                            placeholder="+1 (555) 000-0000"
+                            aria-required="true"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -239,11 +265,17 @@ export default function JoinPage() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Message</FormLabel>
+                        <FormLabel>
+                          Message{" "}
+                          <span aria-hidden="true" className="text-destructive">
+                            *
+                          </span>
+                        </FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Tell us why you want to join..."
                             className="min-h-[120px]"
+                            aria-required="true"
                             {...field}
                           />
                         </FormControl>
@@ -254,7 +286,7 @@ export default function JoinPage() {
 
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-slate-900 to-slate-700 hover:opacity-90"
+                    className="w-full"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -263,7 +295,7 @@ export default function JoinPage() {
                         Submitting...
                       </>
                     ) : (
-                      "Submit Application"
+                      "Join Us"
                     )}
                   </Button>
                 </form>

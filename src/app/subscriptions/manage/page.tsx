@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -33,24 +32,11 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
-
-const formSchema = z.object({
-  fullName: z
-    .string()
-    .min(2, "Full name must be at least 2 characters")
-    .max(100, "Full name must be less than 100 characters"),
-  email: z
-    .string()
-    .email("Please enter a valid email address")
-    .min(5, "Email must be at least 5 characters"),
-  paymentMethod: z.string({
-    required_error: "Please select a payment method",
-  }),
-  reason: z
-    .string()
-    .min(10, "Reason must be at least 10 characters")
-    .max(500, "Reason must be less than 500 characters"),
-});
+import {
+  subscriptionManagementSchema,
+  type SubscriptionManagementSubmission,
+} from "@/lib/forms";
+import { stripeLinks } from "@/lib/stripe-links";
 
 const paymentMethods = [
   { value: "visa", label: "Visa" },
@@ -66,17 +52,16 @@ export default function ManageSubscriptionForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<SubscriptionManagementSubmission>({
+    resolver: zodResolver(subscriptionManagementSchema),
     defaultValues: {
       fullName: "",
       email: "",
-      paymentMethod: "",
       reason: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(): Promise<void> {
     setIsConfirmationOpen(true);
   }
 
@@ -115,7 +100,7 @@ export default function ManageSubscriptionForm() {
     <main className="flex min-h-screen flex-col items-center px-4 sm:px-6 md:px-8 py-16 sm:py-20 md:py-24 max-w-7xl mx-auto mt-16 sm:mt-24 md:mt-32">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-700 to-green-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             Manage Your Subscription
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -132,6 +117,13 @@ export default function ManageSubscriptionForm() {
                 Let our team help you with your subscription changes
               </p>
             </div>
+
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
             <AnimatePresence mode="wait">
               {isSubmitted ? (
@@ -151,7 +143,7 @@ export default function ManageSubscriptionForm() {
                       damping: 15,
                       delay: 0.2,
                     }}
-                    className="w-24 h-24 mx-auto rounded-full bg-emerald-100 flex items-center justify-center"
+                    className="w-24 h-24 mx-auto rounded-full bg-primary/10 flex items-center justify-center"
                   >
                     <motion.svg
                       initial={{ pathLength: 0 }}
@@ -161,7 +153,7 @@ export default function ManageSubscriptionForm() {
                         ease: "easeInOut",
                         delay: 0.5,
                       }}
-                      className="w-12 h-12 text-emerald-600"
+                      className="w-12 h-12 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -288,7 +280,7 @@ export default function ManageSubscriptionForm() {
                       <div className="flex gap-4">
                         <Button
                           type="submit"
-                          className="flex-1 bg-gradient-to-r from-emerald-700 to-green-600 hover:opacity-90 h-11"
+                          className="flex-1 h-11"
                           disabled={isLoading}
                         >
                           {isLoading ? (
@@ -328,8 +320,9 @@ export default function ManageSubscriptionForm() {
             
             <div className="flex justify-center">
               <Link
-                href="https://billing.stripe.com/p/login/28obMA7fT9IYe1W4gg"
+                href={stripeLinks.billingPortal}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="w-full max-w-xs"
               >
                 <Button 
@@ -350,10 +343,11 @@ export default function ManageSubscriptionForm() {
         <Dialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Confirm Your Request</DialogTitle>
+              <DialogTitle>Send this request?</DialogTitle>
               <DialogDescription>
-                Are you sure you want to proceed with this subscription change?
-                This action cannot be undone.
+                We'll send your request to our team, who will review it and
+                follow up with you by email. No changes are made to your
+                subscription until then.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex gap-2">
@@ -366,7 +360,6 @@ export default function ManageSubscriptionForm() {
               </Button>
               <Button
                 onClick={handleConfirm}
-                className="bg-gradient-to-r from-emerald-700 to-green-600 hover:opacity-90"
                 disabled={isLoading}
               >
                 {isLoading ? (

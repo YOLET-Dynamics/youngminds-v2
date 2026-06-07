@@ -29,7 +29,7 @@ export default function Hero() {
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
             Unlocking Potential,{" "}
-            <span className="text-primary/90 block mt-1 sm:mt-2">
+            <span className="text-brand-accent block mt-1 sm:mt-2">
               One Student at a Time
             </span>
           </h1>

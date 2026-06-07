@@ -1,7 +1,8 @@
 export const metadata = {
-  title: "About Us | YoungMinds ET",
+  title: "About Us",
   description:
     "Learn about our mission to provide quality education to underserved students in Ethiopia through sustainable initiatives and technological infrastructure.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -9,11 +10,11 @@ export default function AboutPage() {
     <main className="flex min-h-screen flex-col items-center px-4 sm:px-6 md:px-8 py-16 sm:py-20 md:py-24 max-w-7xl mx-auto mt-16 sm:mt-24 md:mt-32">
       <div className="w-full mb-12 sm:mb-16 md:mb-24">
         <div className="max-w-[85ch] mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 
-                       bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8
+                       bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                        tracking-tight leading-tight">
             Our Story
-          </h2>
+          </h1>
           <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-muted-foreground">
             <p className="leading-relaxed">
               Our mission is to provide underserved students with access to
@@ -37,12 +38,12 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <div className="w-full text-center bg-gradient-to-br from-slate-900/5 to-slate-800/10 
-                    rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg sm:shadow-xl 
-                    mt-8 border border-slate-200/80 backdrop-blur-sm">
+      <div className="w-full text-center bg-secondary
+                    rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg sm:shadow-xl
+                    mt-8 border border-border backdrop-blur-sm">
         <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 
-                       bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6
+                       bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                        tracking-tight leading-tight">
             Vision
           </h2>
