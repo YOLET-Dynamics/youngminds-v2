@@ -1,78 +1,41 @@
-import { Resend } from "resend";
-import { NextResponse } from "next/server";
-import {
-  buildAllowedOrigins,
-  getClientIp,
-  isAllowedOrigin,
-  parseJsonBody,
-  rateLimit,
-} from "@/lib/security";
+import { guardPublicPost, parseJsonBody } from "@/lib/security";
 import { buildJoinEmail, joinSubmissionSchema } from "@/lib/forms";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail, subscribeToNewsletter } from "@/lib/email";
+import { siteConfig } from "@/lib/site";
 
 const maxBodyBytes = 10_000;
-const rateLimitMax = 5;
-const rateLimitWindowMs = 10 * 60 * 1000;
 
-export async function POST(
-  request: Request
-): Promise<NextResponse<{ success: true } | { error: string }>> {
+export async function POST(request: Request): Promise<Response> {
+  const blocked = guardPublicPost(request, { key: "join", limit: 5, windowMs: 10 * 60 * 1000 });
+  if (blocked) {
+    return blocked;
+  }
+
+  const body = await parseJsonBody(request, maxBodyBytes);
+  if (!body.ok) {
+    return Response.json({ error: body.message }, { status: body.status });
+  }
+
+  const parsed = joinSubmissionSchema.safeParse(body.value);
+  if (!parsed.success) {
+    return Response.json({ error: "Please check your details and try again." }, { status: 400 });
+  }
+
   try {
-    if (!isAllowedOrigin(request.headers.get("origin"), getAllowedOrigins(request))) {
-      return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
-    }
-
-    const clientIp = getClientIp(request.headers);
-    const limit = rateLimit(`join:${clientIp}`, rateLimitMax, rateLimitWindowMs);
-    if (!limit.allowed) {
-      return NextResponse.json(
-        { error: "Too many requests" },
-        {
-          status: 429,
-          headers: {
-            "Retry-After": String(limit.retryAfterSeconds),
-          },
-        }
-      );
-    }
-
-    const body = await parseJsonBody(request, maxBodyBytes);
-    if (!body.ok) {
-      return NextResponse.json({ error: body.message }, { status: body.status });
-    }
-
-    const parsed = joinSubmissionSchema.safeParse(body.value);
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-    }
-
-    const email = buildJoinEmail(parsed.data);
-
-    await resend.emails.send({
-      from: "no-reply@youngmindset.org",
-      to: "contact@youngmindset.org",
-      subject: email.subject,
-      html: email.html,
-      text: email.text,
-    });
-
-    return NextResponse.json({ success: true });
+    await sendEmail({ to: siteConfig.email, replyTo: parsed.data.email, ...buildJoinEmail(parsed.data) });
   } catch (error) {
-    console.error("Error sending email:", error);
-    return NextResponse.json(
-      { error: "Failed to send email" },
-      { status: 500 }
-    );
-  }
-}
-
-function getAllowedOrigins(request: Request): Set<string> {
-  const configuredOrigins = buildAllowedOrigins(process.env.SECURITY_ALLOWED_ORIGINS);
-
-  if (configuredOrigins.size > 0) {
-    return configuredOrigins;
+    console.error("Failed to send join request:", error);
+    return Response.json({ error: "Failed to send your request" }, { status: 502 });
   }
 
-  return new Set([new URL(request.url).origin]);
+  // The join request already reached the team, so a newsletter failure must not fail the request.
+  if (parsed.data.newsletter) {
+    try {
+      await subscribeToNewsletter({ email: parsed.data.email, firstName: parsed.data.firstName });
+    } catch (error) {
+      console.error("Failed to add join applicant to the newsletter:", error);
+    }
+  }
+
+  return Response.json({ success: true });
 }

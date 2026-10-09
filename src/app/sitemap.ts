@@ -7,6 +7,8 @@ const routes = [
   "/initiatives",
   "/initiatives/adina",
   "/events",
+  "/events/good-drinks-brighter-futures",
+  "/impact",
   "/donate",
   "/donate/subscribe",
   "/join",
