@@ -37,8 +37,8 @@ export const subscriptionManagementSchema = z
   })
   .strict();
 
-export type JoinSubmission = z.infer<typeof joinSubmissionSchema>;
-export type SubscriptionManagementSubmission = z.infer<
+type JoinSubmission = z.infer<typeof joinSubmissionSchema>;
+type SubscriptionManagementSubmission = z.infer<
   typeof subscriptionManagementSchema
 >;
 

@@ -45,7 +45,7 @@ export const liveCampaign = {
     width: 1024,
     height: 1536,
   },
-} as const satisfies { slug: DesignationSlug } & Record<string, unknown>;
+} as const;
 
 export const pastCampaigns = [
   {
@@ -76,6 +76,9 @@ export const pastCampaigns = [
     },
   },
 ] as const;
+
+/** One-time gift limits, enforced by the checkout API and shown by the donate form. */
+export const donationLimitsCents = { min: 100, max: 1_000_000 } as const;
 
 export const giftLadder = [
   { amount: 10, title: "School supplies", desc: "Provides essential school supplies to a student in need." },

@@ -12,8 +12,8 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "connect-src 'self'",
-  "frame-src 'self' https://js.stripe.com https://checkout.stripe.com https://billing.stripe.com",
-  "form-action 'self' https://checkout.stripe.com https://billing.stripe.com",
+  "frame-src 'none'",
+  "form-action 'self'",
   ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 

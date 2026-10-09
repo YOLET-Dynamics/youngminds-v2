@@ -41,7 +41,7 @@ export default async function SubscribePage({ searchParams }: PageProps<"/donate
                     <small>/month</small>
                   </p>
                   <p className="muted">{tier.desc}</p>
-                  <MonthlyTierButton tier={key} amount={tier.amount} featured={featured} campaign={campaign} />
+                  <MonthlyTierButton tier={key} featured={featured} campaign={campaign} />
                 </div>
               );
             })}

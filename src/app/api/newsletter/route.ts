@@ -5,7 +5,7 @@ import { subscribeToNewsletter } from "@/lib/email";
 const maxBodyBytes = 1_000;
 
 export async function POST(request: Request): Promise<Response> {
-  const blocked = guardPublicPost(request, { key: "newsletter", limit: 5, windowMs: 10 * 60 * 1000 });
+  const blocked = guardPublicPost(request, { key: "newsletter", limit: 20, windowMs: 10 * 60 * 1000 });
   if (blocked) {
     return blocked;
   }

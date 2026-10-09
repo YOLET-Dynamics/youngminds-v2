@@ -1,36 +1,38 @@
-import { cache } from "react";
 import type Stripe from "stripe";
 import type { DesignationSlug } from "./campaigns.ts";
 import { getStripe } from "./stripe.ts";
 
-export type CampaignProgress = {
+type CampaignProgress = {
   raisedCents: number;
   donorCount: number;
 };
 
-/** Live campaign progress for pages. Returns null when Stripe is unavailable so pages still render. */
-export const loadCampaignProgress = cache(async (campaign: DesignationSlug): Promise<CampaignProgress | null> => {
-  try {
-    return await fetchCampaignProgress(getStripe(), campaign);
-  } catch (error) {
-    console.error(`Failed to load progress for campaign ${campaign}:`, error);
-    return null;
-  }
-});
+type SettledGift = {
+  id: string;
+  receivedCents: number;
+  refundedCents: number;
+  email: string | null;
+};
 
 // 20 pages of 100 gifts. Revisit if a single campaign approaches 2,000 gifts.
 const maxSearchPages = 20;
 
+/** Live campaign progress for pages. Returns null when Stripe is unavailable so pages still render. */
+export async function loadCampaignProgress(campaign: DesignationSlug): Promise<CampaignProgress | null> {
+  try {
+    return summarizeGifts(await searchCampaignGifts(getStripe(), campaign));
+  } catch (error) {
+    console.error(`Failed to load progress for campaign ${campaign}:`, error);
+    return null;
+  }
+}
+
 /**
- * Sums succeeded one-time gifts tagged with the campaign, net of refunds.
- * Stripe search is eventually consistent (about a minute), which matches the
- * "updated every minute" promise on the tracker.
+ * Finds succeeded one-time gifts tagged with the campaign. Stripe search is eventually
+ * consistent (about a minute), which matches the tracker's "updated every minute".
  */
-export async function fetchCampaignProgress(
-  stripe: Stripe,
-  campaign: DesignationSlug
-): Promise<CampaignProgress> {
-  const payments: Stripe.PaymentIntent[] = [];
+async function searchCampaignGifts(stripe: Stripe, campaign: DesignationSlug): Promise<SettledGift[]> {
+  const gifts: SettledGift[] = [];
   let page: string | undefined;
 
   for (let pageCount = 0; pageCount < maxSearchPages; pageCount += 1) {
@@ -41,31 +43,38 @@ export async function fetchCampaignProgress(
       ...(page ? { page } : {}),
     });
 
-    payments.push(...result.data);
+    for (const payment of result.data) {
+      const charge = typeof payment.latest_charge === "object" ? payment.latest_charge : null;
+      gifts.push({
+        id: payment.id,
+        receivedCents: payment.amount_received,
+        refundedCents: charge?.amount_refunded ?? 0,
+        email: charge?.billing_details.email ?? null,
+      });
+    }
 
     if (!result.has_more || !result.next_page) {
-      return summarizePayments(payments);
+      return gifts;
     }
     page = result.next_page;
   }
 
   console.warn(`Campaign ${campaign} has more than ${maxSearchPages} pages of gifts; the total is partial.`);
-  return summarizePayments(payments);
+  return gifts;
 }
 
-export function summarizePayments(payments: Stripe.PaymentIntent[]): CampaignProgress {
+export function summarizeGifts(gifts: SettledGift[]): CampaignProgress {
   let raisedCents = 0;
   const donors = new Set<string>();
 
-  for (const payment of payments) {
-    const charge = typeof payment.latest_charge === "object" ? payment.latest_charge : null;
-    const netCents = payment.amount_received - (charge?.amount_refunded ?? 0);
+  for (const gift of gifts) {
+    const netCents = gift.receivedCents - gift.refundedCents;
     if (netCents <= 0) {
       continue;
     }
 
     raisedCents += netCents;
-    donors.add(charge?.billing_details.email?.toLowerCase() ?? payment.id);
+    donors.add(gift.email?.toLowerCase() ?? gift.id);
   }
 
   return { raisedCents, donorCount: donors.size };

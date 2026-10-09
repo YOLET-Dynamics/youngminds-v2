@@ -3,18 +3,16 @@ import { z } from "zod";
 import {
   designations,
   designationSlugs,
+  donationLimitsCents,
   monthlyTierKeys,
   monthlyTiers,
 } from "./campaigns.ts";
-
-export const minDonationCents = 100;
-export const maxDonationCents = 1_000_000;
 
 export const checkoutRequestSchema = z.discriminatedUnion("frequency", [
   z
     .object({
       frequency: z.literal("once"),
-      amountCents: z.number().int().min(minDonationCents).max(maxDonationCents),
+      amountCents: z.number().int().min(donationLimitsCents.min).max(donationLimitsCents.max),
       campaign: z.enum(designationSlugs).optional(),
     })
     .strict(),
@@ -27,7 +25,7 @@ export const checkoutRequestSchema = z.discriminatedUnion("frequency", [
     .strict(),
 ]);
 
-export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
+type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
 type CheckoutProduct = { id: string; name: string };
 
@@ -37,7 +35,7 @@ const monthlyProduct: CheckoutProduct = { id: "ym_monthly_gift", name: "Monthly 
 const receiptNote =
   "YoungMinds ET Inc. is a registered 501(c)(3) nonprofit. No goods or services are provided in exchange for your gift. It is tax-deductible to the extent permitted by law.";
 
-export function checkoutProductFor(request: CheckoutRequest): CheckoutProduct {
+function checkoutProductFor(request: CheckoutRequest): CheckoutProduct {
   if (request.frequency === "monthly") {
     return monthlyProduct;
   }
@@ -50,7 +48,7 @@ export function checkoutProductFor(request: CheckoutRequest): CheckoutProduct {
   return oneTimeProduct;
 }
 
-/** Builds the Checkout Session for a validated request. `origin` is the trusted site origin. */
+/** `origin` must be the configured site origin, never a value taken from request headers. */
 export function buildCheckoutSessionParams(
   request: CheckoutRequest,
   origin: string
@@ -106,7 +104,6 @@ export function buildCheckoutSessionParams(
   };
 }
 
-/** Creates a Checkout Session and returns the Stripe-hosted URL to redirect the donor to. */
 export async function createDonationCheckout(
   stripe: Stripe,
   request: CheckoutRequest,

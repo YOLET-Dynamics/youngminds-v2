@@ -18,11 +18,13 @@ export function CampaignTracker({
   raisedLabel,
   size = "default",
 }: CampaignTrackerProps) {
+  const raisedClassName = `tracker-raised${size === "compact" ? " text-[2.25rem]" : ""}`;
+
   if (raisedCents === null) {
     return (
       <div className="tracker">
         <div className="tracker-amount">
-          <span className="tracker-raised" style={size === "compact" ? { fontSize: "2.25rem" } : undefined}>
+          <span className={raisedClassName}>
             Goal {formatUsd(goalCents)}
           </span>
         </div>
@@ -41,7 +43,7 @@ export function CampaignTracker({
   return (
     <div className={`tracker${isComplete ? " is-complete" : ""}`}>
       <div className="tracker-amount">
-        <span className="tracker-raised" style={size === "compact" ? { fontSize: "2.25rem" } : undefined}>
+        <span className={raisedClassName}>
           {raised}
         </span>
         <span className="tracker-goal">of {formatUsd(goalCents)} goal</span>

@@ -6,7 +6,7 @@ export const subscriptionChangeOptions = {
   other: "Something else",
 } as const;
 
-export type SubscriptionChange = keyof typeof subscriptionChangeOptions;
+type SubscriptionChange = keyof typeof subscriptionChangeOptions;
 
 export const subscriptionChangeValues = Object.keys(subscriptionChangeOptions) as [
   SubscriptionChange,

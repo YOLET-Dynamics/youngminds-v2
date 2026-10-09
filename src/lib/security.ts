@@ -24,10 +24,12 @@ type RateLimitResult =
       retryAfterSeconds: number;
     };
 
+// In-memory and per server instance, so each instance limits separately. If abuse
+// appears across instances, move this store to a shared one such as Redis.
 const rateLimitStore = new Map<string, RateLimitEntry>();
 const rateLimitPruneThreshold = 10_000;
 
-export function buildAllowedOrigins(value: string | undefined): Set<string> {
+function buildAllowedOrigins(value: string | undefined): Set<string> {
   const origins = new Set<string>();
 
   for (const item of value?.split(",") ?? []) {
@@ -54,7 +56,7 @@ export function buildAllowedOrigins(value: string | undefined): Set<string> {
   return origins;
 }
 
-export function isAllowedOrigin(
+function isAllowedOrigin(
   origin: string | null,
   allowedOrigins: Set<string>
 ): boolean {
@@ -101,7 +103,7 @@ export async function parseJsonBody(
   }
 }
 
-export function getClientIp(headers: Headers): string {
+function getClientIp(headers: Headers): string {
   const forwardedFor = headers.get("x-forwarded-for");
   if (forwardedFor) {
     return forwardedFor.split(",")[0]?.trim() || "unknown";
@@ -115,7 +117,7 @@ export function getClientIp(headers: Headers): string {
   );
 }
 
-export function rateLimit(
+function rateLimit(
   key: string,
   limit: number,
   windowMs: number,

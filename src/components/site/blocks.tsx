@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "./Icon";
 
-export const pillars = [
+const pillars = [
   { icon: "house", title: "Housing", desc: "Safe, stable places for students to live and study." },
   { icon: "bowl", title: "Food & care", desc: "Daily meals and the basic care students need to focus." },
   { icon: "book", title: "Education", desc: "Supplies, textbooks and learning materials." },
@@ -26,7 +26,7 @@ export function PillarGrid({ items = pillars, className = "" }: {
   );
 }
 
-export type Fact = { icon: IconName; label: string; value: ReactNode };
+type Fact = { icon: IconName; label: string; value: ReactNode };
 
 /** Icon + label + value rows. `emphasis="value"` puts the value first, as on the donate and join pages. */
 export function FactList({ items, emphasis = "label", label }: {

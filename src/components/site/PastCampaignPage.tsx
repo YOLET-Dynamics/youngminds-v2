@@ -7,7 +7,6 @@ import { liveCampaign, pastCampaigns } from "@/lib/campaigns";
 
 type PastCampaign = (typeof pastCampaigns)[number];
 
-/** Shared layout for completed campaigns: result, thank-you and a pointer to the live campaign. */
 export function PastCampaignPage({ campaign, title, intro }: {
   campaign: PastCampaign;
   title: string;

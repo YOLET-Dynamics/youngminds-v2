@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { siteConfig } from "@/lib/site";
 
-export type LegalSection = { id: string; title: string; body: ReactNode };
+type LegalSection = { id: string; title: string; body: ReactNode };
 
 export function LegalPage({ title, effectiveDate, intro, sections, contactTitle }: {
   title: string;

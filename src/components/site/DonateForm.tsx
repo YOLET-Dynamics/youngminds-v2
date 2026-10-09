@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { giftLadder, type DesignationSlug } from "@/lib/campaigns";
+import { designations, donationLimitsCents, formatUsd, giftLadder, type DesignationSlug } from "@/lib/campaigns";
 import { useCheckout } from "./useCheckout";
 
 const presetAmounts = giftLadder.map((gift) => gift.amount);
-const minDollars = 1;
-const maxDollars = 10_000;
 
 type Frequency = "once" | "monthly";
 
@@ -19,7 +17,7 @@ function parseDollars(value: string): number | null {
   return Number(cleaned);
 }
 
-export function DonateForm({ campaign, campaignName }: { campaign?: DesignationSlug; campaignName?: string }) {
+export function DonateForm({ campaign }: { campaign?: DesignationSlug }) {
   const [frequency, setFrequency] = useState<Frequency>("once");
   const [preset, setPreset] = useState<number | null>(25);
   const [custom, setCustom] = useState("");
@@ -32,14 +30,17 @@ export function DonateForm({ campaign, campaignName }: { campaign?: DesignationS
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (dollars === null || dollars < minDollars || dollars > maxDollars) {
-      setError(`Please enter an amount between $${minDollars} and $${maxDollars.toLocaleString("en-US")}.`);
+    const amountCents = dollars === null ? null : Math.round(dollars * 100);
+    if (amountCents === null || amountCents < donationLimitsCents.min || amountCents > donationLimitsCents.max) {
+      setError(
+        `Please enter an amount between ${formatUsd(donationLimitsCents.min)} and ${formatUsd(donationLimitsCents.max)}.`
+      );
       return;
     }
 
     await startCheckout({
       frequency: "once",
-      amountCents: Math.round(dollars * 100),
+      amountCents,
       ...(campaign ? { campaign } : {}),
     });
   }
@@ -50,7 +51,7 @@ export function DonateForm({ campaign, campaignName }: { campaign?: DesignationS
         <h2 id="give-title" className="h3">
           Choose your gift
         </h2>
-        {campaignName && <p className="small muted">Your gift supports {campaignName}.</p>}
+        {campaign && <p className="small muted">Your gift supports {designations[campaign].name}.</p>}
       </div>
 
       <fieldset className="choice-group gap-0">

@@ -1,11 +1,10 @@
 "use client";
 
-import type { DesignationSlug, MonthlyTier } from "@/lib/campaigns";
+import { monthlyTiers, type DesignationSlug, type MonthlyTier } from "@/lib/campaigns";
 import { useCheckout } from "./useCheckout";
 
-export function MonthlyTierButton({ tier, amount, featured, campaign }: {
+export function MonthlyTierButton({ tier, featured, campaign }: {
   tier: MonthlyTier;
-  amount: number;
   featured: boolean;
   campaign?: DesignationSlug;
 }) {
@@ -19,7 +18,7 @@ export function MonthlyTierButton({ tier, amount, featured, campaign }: {
         onClick={() => startCheckout({ frequency: "monthly", tier, ...(campaign ? { campaign } : {}) })}
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Opening secure payment…" : `Give $${amount} monthly`}
+        {isSubmitting ? "Opening secure payment…" : `Give $${monthlyTiers[tier].amount} monthly`}
       </button>
       {error && (
         <p className="field-error" role="alert">

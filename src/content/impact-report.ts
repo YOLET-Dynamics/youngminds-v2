@@ -3,14 +3,14 @@
  * leave a value as null (or a list empty) until it is confirmed, and that part stays hidden.
  */
 
-export type ReportStat = { value: string; label: string };
-export type ReportAllocation = { label: string; percent: number };
+type ReportStat = { value: string; label: string };
+type ReportAllocation = { label: string; percent: number };
 export type ReportProgram = { pillar: "housing" | "food" | "education" | "vision"; title: string; summary: string | null };
-export type ReportStory = { quote: string; name: string; image: { src: string; alt: string } | null };
+type ReportStory = { quote: string; name: string; image: { src: string; alt: string } | null };
 export type ReportMilestone = { status: "done" | "in-progress" | "next"; text: string };
-export type ReportDocument = { href: string; sizeLabel: string };
+type ReportDocument = { href: string; sizeLabel: string };
 
-export type ImpactReport = {
+type ImpactReport = {
   period: string;
   intro: string;
   /** Full report PDF in /public/reports. */

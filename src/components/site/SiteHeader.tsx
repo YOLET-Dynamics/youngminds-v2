@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { primaryNav, siteConfig } from "@/lib/site";
 import { Icon } from "./Icon";
 
-const logo = { src: "/logo/logo-02-04.png", alt: "" };
+const logoSrc = "/logo/logo-02-04.png";
 
 function isCurrent(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -29,9 +29,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const wasMenuOpen = useRef(false);
+  const menuRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 8);
@@ -40,30 +38,12 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-      closeButtonRef.current?.focus();
-      const onKeyDown = (event: KeyboardEvent) => {
-        if (event.key === "Escape") {
-          setIsMenuOpen(false);
-        }
-      };
-      document.addEventListener("keydown", onKeyDown);
-      wasMenuOpen.current = true;
-      return () => {
-        document.body.style.overflow = "";
-        document.removeEventListener("keydown", onKeyDown);
-      };
-    }
-
-    if (wasMenuOpen.current) {
-      wasMenuOpen.current = false;
-      menuButtonRef.current?.focus();
-    }
-  }, [isMenuOpen]);
-
-  const closeMenu = () => setIsMenuOpen(false);
+  // The native modal dialog traps focus, closes on Escape and returns focus to the menu button.
+  const openMenu = () => {
+    menuRef.current?.showModal();
+    setIsMenuOpen(true);
+  };
+  const closeMenu = () => menuRef.current?.close();
 
   return (
     <>
@@ -73,13 +53,12 @@ export function SiteHeader() {
       <header className={`site-header${isScrolled ? " is-scrolled" : ""}`}>
         <div className="wrap header-inner">
           <button
-            ref={menuButtonRef}
             className="menu-btn"
             type="button"
             aria-label="Open menu"
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
-            onClick={() => setIsMenuOpen(true)}
+            onClick={openMenu}
           >
             <Icon name="menu" />
           </button>
@@ -87,7 +66,7 @@ export function SiteHeader() {
             <NavLinks items={primaryNav.slice(0, 3)} pathname={pathname} />
           </nav>
           <Link className="header-logo" href="/" aria-label="YoungMinds ET home">
-            <Image src={logo.src} alt={logo.alt} width={72} height={72} priority />
+            <Image src={logoSrc} alt="" width={72} height={72} priority />
           </Link>
           <div className="nav-desktop right">
             <NavLinks items={primaryNav.slice(3)} pathname={pathname} />
@@ -101,19 +80,12 @@ export function SiteHeader() {
         </div>
       </header>
 
-      <div
-        className="mobile-menu"
-        id="mobile-menu"
-        hidden={!isMenuOpen}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu"
-      >
+      <dialog ref={menuRef} className="mobile-menu" id="mobile-menu" aria-label="Menu" onClose={() => setIsMenuOpen(false)}>
         <div className="mobile-menu-top">
           <Link href="/" aria-label="YoungMinds ET home" onClick={closeMenu}>
-            <Image src={logo.src} alt={logo.alt} width={52} height={52} />
+            <Image src={logoSrc} alt="" width={52} height={52} />
           </Link>
-          <button ref={closeButtonRef} className="close-btn" type="button" aria-label="Close menu" onClick={closeMenu}>
+          <button className="close-btn" type="button" aria-label="Close menu" onClick={closeMenu} autoFocus>
             <Icon name="close" />
           </button>
         </div>
@@ -126,7 +98,7 @@ export function SiteHeader() {
         <a className="arrow-link" href={siteConfig.instagram} target="_blank" rel="noopener noreferrer">
           Follow {siteConfig.instagramHandle}
         </a>
-      </div>
+      </dialog>
     </>
   );
 }

@@ -44,11 +44,7 @@ export default async function ImpactPage() {
           </div>
           {report.pdf ? (
             <a className="report-card" href={report.pdf.href} download>
-              <span className="report-cover">
-                2025
-                <br />
-                –26
-              </span>
+              <span className="report-cover">{report.period}</span>
               <span className="stack-sm">
                 <strong>Download the full report</strong>
                 <span className="meta">PDF · {report.pdf.sizeLabel}</span>
