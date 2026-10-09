@@ -1,78 +1,72 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { DonateBand } from "@/components/site/blocks";
+import { Icon, type IconName } from "@/components/site/Icon";
 
-export const metadata = {
-  title: "Our Initiatives",
+export const metadata: Metadata = {
+  title: "Initiatives",
   description:
-    "Discover our projects and partnerships helping shape the future of Ethiopia's youth through education and sustainable development.",
+    "The four pillars YoungMinds ET funds: housing, food and care, education, and a five-year vision for lasting change in Ethiopia.",
   alternates: { canonical: "/initiatives" },
 };
 
-export default function Initiatives() {
+const pillars: { icon: IconName; title: string; desc: string }[] = [
+  { icon: "house", title: "Housing", desc: "Safe, stable places for students to live and study." },
+  { icon: "bowl", title: "Food & care", desc: "Daily meals and the basic care students need to focus." },
+  { icon: "book", title: "Education", desc: "Supplies, textbooks, learning tools and mentorship." },
+  {
+    icon: "flag",
+    title: "5-year vision",
+    desc: "A future where education unlocks limitless potential for every child in Ethiopia.",
+  },
+];
+
+export default function InitiativesPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center px-4 sm:px-6 md:px-8 
-                   py-16 sm:py-20 md:py-24 max-w-7xl mx-auto mt-16 sm:mt-20 md:mt-32">
-      <div className="text-left mb-8 sm:mb-12 md:mb-16 space-y-3 sm:space-y-4 w-full">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold
-                    bg-gradient-to-r from-primary to-primary/60
-                    bg-clip-text text-transparent tracking-tight leading-tight">
-          Our Initiatives
-        </h1>
-        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-          Discover the projects and partnerships that are helping us shape the
-          future of Ethiopia&apos;s youth.
-        </p>
-      </div>
+    <>
+      <section className="hero pb-12">
+        <div className="wrap stack">
+          <p className="eyebrow">Initiatives</p>
+          <h1 className="display max-w-[13em]">Four pillars, one long-term plan.</h1>
+          <p className="lead">Everything we fund falls under one of four pillars, guided by a five-year vision.</p>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 w-full">
-        <Card className="group transition-all duration-300 overflow-hidden p-0 pb-4 sm:pb-6 
-                      hover:-translate-y-1 hover:shadow-xl border-border/60">
-          {/* Optional image - can be removed if no image available */}
-          {/* <div className="aspect-video w-full">
-            <img 
-              src="/path-to-image.jpg" 
-              alt="Adina Project"
-              className="w-full h-full object-cover"
-            />
-          </div> */}
-
-          <div className="aspect-[21/9] w-full bg-primary/5 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-from)_0%,_var(--tw-gradient-to)_100%)]
-                          from-primary/20 to-primary/5 blur-xl" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-2xl sm:text-3xl md:text-4xl font-bold
-                           bg-gradient-to-r from-primary to-primary/60
-                           bg-clip-text text-transparent px-4 text-center">
-                Adina Project
-              </span>
+      <section aria-label="Pillars">
+        <div className="wrap grid-2 gap-x-12 gap-y-0">
+          {pillars.map(({ icon, title, desc }) => (
+            <div className="pillar py-8 border-t border-line" key={title}>
+              <Icon name={icon} />
+              <h2 className="h3">{title}</h2>
+              <p>{desc}</p>
             </div>
-          </div>
+          ))}
+        </div>
+      </section>
 
-          <CardHeader className="pb-2 sm:pb-3">
-            <h3 className="text-xl sm:text-2xl font-semibold tracking-tight">Adina Project</h3>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              Christ-centered initiative, dedicated to raising children with
-              love, wisdom and purpose
-            </p>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-              The Adina Project is a Christ-centered initiative dedicated to
-              raising children with love, wisdom, and purpose—surrounded by
-              mentors, spiritual guidance, and a family they can rely on.
-            </p>
-            <Link href="/initiatives/adina" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto h-10 sm:h-11
-                              text-sm sm:text-base font-medium transition-all duration-200">
-                Learn More
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <section className="section" aria-labelledby="projects-title">
+        <div className="wrap">
+          <h2 id="projects-title" className="h2 mb-8">
+            Projects
+          </h2>
+          <Link className="event-card paper event-feature p-6" href="/initiatives/adina">
+            <div className="grid place-items-center aspect-[4/3] rounded-[var(--radius)] bg-forest p-8 text-center">
+              <p className="serif text-[clamp(1.5rem,1.2rem+1.4vw,2.25rem)] leading-snug text-white">
+                “Train up a child in the way he should go.”
+                <span className="eyebrow mt-4 block text-gold">Proverbs 22:6</span>
+              </p>
+            </div>
+            <div className="stack">
+              <p className="eyebrow">Adina Project</p>
+              <h3 className="h2">Raising the next generation in Christ</h3>
+              <p className="muted">A Christ-centered initiative dedicated to raising children with love, wisdom and purpose.</p>
+              <span className="arrow-link">Learn about Adina</span>
+            </div>
+          </Link>
+        </div>
+      </section>
 
-        
-      </div>
-    </main>
+      <DonateBand title="Fund the pillars." secondary={{ href: "/join", label: "Volunteer" }} />
+    </>
   );
 }

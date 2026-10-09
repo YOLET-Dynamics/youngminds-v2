@@ -13,7 +13,8 @@ const contentSecurityPolicy = [
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "connect-src 'self'",
   "frame-src 'self' https://js.stripe.com https://checkout.stripe.com https://billing.stripe.com",
-  "form-action 'self' https://checkout.stripe.com https://billing.stripe.com https://donate.stripe.com",
+  "form-action 'self' https://checkout.stripe.com https://billing.stripe.com",
+  ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
 const nextConfig: NextConfig = {
@@ -25,6 +26,10 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Security-Policy",
             value: contentSecurityPolicy,
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains",
           },
           {
             key: "X-Content-Type-Options",

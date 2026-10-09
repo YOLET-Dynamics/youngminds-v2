@@ -1,85 +1,39 @@
-import { Resend } from "resend";
-import { NextResponse } from "next/server";
-import {
-  buildAllowedOrigins,
-  getClientIp,
-  isAllowedOrigin,
-  parseJsonBody,
-  rateLimit,
-} from "@/lib/security";
-import {
-  buildSubscriptionManagementEmail,
-  subscriptionManagementSchema,
-} from "@/lib/forms";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { guardPublicPost, parseJsonBody } from "@/lib/security";
+import { buildSubscriptionManagementEmail, subscriptionManagementSchema } from "@/lib/forms";
+import { sendEmail } from "@/lib/email";
 
 const maxBodyBytes = 10_000;
-const rateLimitMax = 5;
-const rateLimitWindowMs = 10 * 60 * 1000;
 
-export async function POST(
-  request: Request
-): Promise<NextResponse<{ success: true } | { error: string }>> {
+export async function POST(request: Request): Promise<Response> {
+  const blocked = guardPublicPost(request, {
+    key: "subscriptions:manage",
+    limit: 5,
+    windowMs: 10 * 60 * 1000,
+  });
+  if (blocked) {
+    return blocked;
+  }
+
+  const body = await parseJsonBody(request, maxBodyBytes);
+  if (!body.ok) {
+    return Response.json({ error: body.message }, { status: body.status });
+  }
+
+  const parsed = subscriptionManagementSchema.safeParse(body.value);
+  if (!parsed.success) {
+    return Response.json({ error: "Please check your details and try again." }, { status: 400 });
+  }
+
   try {
-    if (!isAllowedOrigin(request.headers.get("origin"), getAllowedOrigins(request))) {
-      return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
-    }
-
-    const clientIp = getClientIp(request.headers);
-    const limit = rateLimit(
-      `subscriptions:manage:${clientIp}`,
-      rateLimitMax,
-      rateLimitWindowMs
-    );
-    if (!limit.allowed) {
-      return NextResponse.json(
-        { error: "Too many requests" },
-        {
-          status: 429,
-          headers: {
-            "Retry-After": String(limit.retryAfterSeconds),
-          },
-        }
-      );
-    }
-
-    const body = await parseJsonBody(request, maxBodyBytes);
-    if (!body.ok) {
-      return NextResponse.json({ error: body.message }, { status: body.status });
-    }
-
-    const parsed = subscriptionManagementSchema.safeParse(body.value);
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-    }
-
-    const email = buildSubscriptionManagementEmail(parsed.data);
-
-    await resend.emails.send({
-      from: "no-reply@youngmindset.org",
+    await sendEmail({
       to: "subscriptions@youngmindset.org",
-      subject: email.subject,
-      html: email.html,
-      text: email.text,
+      replyTo: parsed.data.email,
+      ...buildSubscriptionManagementEmail(parsed.data),
     });
-
-    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error sending email:", error);
-    return NextResponse.json(
-      { error: "Failed to send email" },
-      { status: 500 }
-    );
-  }
-}
-
-function getAllowedOrigins(request: Request): Set<string> {
-  const configuredOrigins = buildAllowedOrigins(process.env.SECURITY_ALLOWED_ORIGINS);
-
-  if (configuredOrigins.size > 0) {
-    return configuredOrigins;
+    console.error("Failed to send subscription management request:", error);
+    return Response.json({ error: "Failed to send your request" }, { status: 502 });
   }
 
-  return new Set([new URL(request.url).origin]);
+  return Response.json({ success: true });
 }

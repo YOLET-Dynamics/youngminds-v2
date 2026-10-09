@@ -1,15 +1,34 @@
-import type { Metadata } from "next";
-import { Work_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Caveat, Fraunces, Work_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/ui/Navbar";
-import Footer from "@/components/ui/Footer";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { StickyDonate } from "@/components/site/StickyDonate";
 import { siteConfig } from "@/lib/site";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  axes: ["opsz"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
 
 const workSans = Work_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-work-sans",
   display: "swap",
 });
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: "600",
+  variable: "--font-caveat",
+  display: "swap",
+});
+
+export const viewport: Viewport = {
+  themeColor: "#F7F1E6",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -27,11 +46,13 @@ export const metadata: Metadata = {
     title: siteConfig.defaultTitle,
     description: siteConfig.description,
     locale: "en_US",
+    images: [{ url: "/images/hero.jpg", width: 1800, height: 1394, alt: "A young student smiling and holding a small globe" }],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.defaultTitle,
     description: siteConfig.description,
+    images: ["/images/hero.jpg"],
   },
   icons: {
     icon: [
@@ -74,15 +95,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${workSans.className} antialiased`}>
+    <html lang="en" className={`${fraunces.variable} ${workSans.variable} ${caveat.variable}`}>
+      <body>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-        <Navbar />
-        {children}
-        <Footer />
+        <SiteHeader />
+        <main id="main">{children}</main>
+        <SiteFooter />
+        <StickyDonate />
       </body>
     </html>
   );

@@ -1,54 +1,46 @@
-import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
+import { getStripe } from "@/lib/stripe";
+import { subscribeToNewsletter } from "@/lib/email";
 
-if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
-  throw new Error(
-    "Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET in .env.local"
-  );
-}
+export async function POST(request: Request): Promise<Response> {
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!endpointSecret) {
+    console.error("STRIPE_WEBHOOK_SECRET is not configured");
+    return Response.json({ error: "Webhook is not configured" }, { status: 500 });
+  }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-03-31.basil",
-});
-
-// Secret from Stripe webhook setup
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
-export async function POST(req: NextRequest): Promise<NextResponse<{ received: boolean } | { error: string }>> {
-  const rawBody = await req.text();
-  const sig = req.headers.get("stripe-signature");
-
-  if (!sig) {
-    console.error("⚠️ Missing stripe-signature header");
-    return NextResponse.json(
-      { error: "Missing stripe-signature header" },
-      { status: 400 }
-    );
+  const signature = request.headers.get("stripe-signature");
+  if (!signature) {
+    return Response.json({ error: "Missing stripe-signature header" }, { status: 400 });
   }
 
   let event: Stripe.Event;
-
   try {
-    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
+    event = getStripe().webhooks.constructEvent(await request.text(), signature, endpointSecret);
   } catch (error) {
     console.error("Stripe webhook signature verification failed:", error);
-    return NextResponse.json({ error: "Invalid webhook" }, { status: 400 });
+    return Response.json({ error: "Invalid webhook" }, { status: 400 });
   }
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      console.log(
-        `Stripe checkout.session.completed event=${event.id} amount=${
-          (session.amount_total ?? 0) / 100
-        } ${session.currency?.toUpperCase() ?? "UNKNOWN"}`
-      );
-      // Here you would typically update your database
-      break;
+  if (event.type === "checkout.session.completed") {
+    try {
+      await handleCompletedCheckout(event.data.object);
+    } catch (error) {
+      // A non-2xx response makes Stripe retry; the newsletter subscribe is safe to repeat.
+      console.error(`Failed to handle ${event.type} event=${event.id}:`, error);
+      return Response.json({ error: "Webhook handler failed" }, { status: 500 });
     }
-    default:
-      console.warn(`Unhandled event type: ${event.type}`);
   }
 
-  return NextResponse.json({ received: true });
+  return Response.json({ received: true });
+}
+
+async function handleCompletedCheckout(session: Stripe.Checkout.Session): Promise<void> {
+  const email = session.customer_details?.email;
+  if (session.consent?.promotions !== "opt_in" || !email) {
+    return;
+  }
+
+  const firstName = session.customer_details?.name?.trim().split(/\s+/)[0];
+  await subscribeToNewsletter({ email, firstName });
 }

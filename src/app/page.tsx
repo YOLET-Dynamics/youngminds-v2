@@ -1,117 +1,221 @@
-import Hero from "@/components/ui/Hero";
+import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BookOpen, GraduationCap, HeartHandshake } from "lucide-react";
+import { CampaignTracker } from "@/components/site/CampaignTracker";
+import { DonateBand, FactList, PillarGrid } from "@/components/site/blocks";
+import { Icon } from "@/components/site/Icon";
+import { NewsletterForm } from "@/components/site/NewsletterForm";
+import { loadCampaignProgress } from "@/lib/campaign-progress";
+import { giftLadder, liveCampaign, pastCampaigns } from "@/lib/campaigns";
+import { siteConfig } from "@/lib/site";
 
-const impact = [
-  {
-    amount: "$10",
-    title: "School supplies",
-    desc: "Provides essential school supplies to a student in need.",
-    icon: BookOpen,
-  },
-  {
-    amount: "$25",
-    title: "Textbooks & materials",
-    desc: "Equips students with textbooks and the materials they need to learn.",
-    icon: GraduationCap,
-  },
-  {
-    amount: "$50",
-    title: "Comprehensive support",
-    desc: "Helps fund ongoing educational support for multiple students.",
-    icon: HeartHandshake,
-  },
-];
+export const revalidate = 60;
 
-export default function Index() {
+export default async function HomePage() {
+  const progress = await loadCampaignProgress(liveCampaign.slug);
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <main className="flex-1">
-        <Hero />
-
-        {/* Mission */}
-        <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
-          <span className="text-sm font-medium uppercase tracking-wide text-primary">
-            Our mission
-          </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-            Every child deserves the chance to learn and grow.
-          </h2>
-          <p className="mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed">
-            YoungMinds ET provides underserved students across Ethiopia with
-            quality education through sustainable initiatives—bridging the gap
-            with the tools, resources, and mentorship they need to thrive.
-          </p>
-        </section>
-
-        {/* Where your gift goes */}
-        <section className="bg-secondary/60 border-y border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
-            <div className="max-w-2xl mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-                Where your gift goes
-              </h2>
-              <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
-                Every contribution turns directly into opportunity for a student
-                in need.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              {impact.map(({ amount, title, desc, icon: Icon }) => (
-                <Card key={amount} className="border-border/60">
-                  <CardContent className="p-6 sm:p-8">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-5">
-                      <Icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <p className="text-3xl font-bold text-brand-accent-foreground">
-                      {amount}
-                    </p>
-                    <h3 className="mt-2 text-lg font-semibold tracking-tight">
-                      {title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {desc}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Closing CTA */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
-          <div className="rounded-3xl bg-primary text-primary-foreground px-6 sm:px-12 py-14 sm:py-20 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight max-w-2xl mx-auto">
-              Be the reason a student stays in school.
-            </h2>
-            <p className="mt-5 text-base sm:text-lg text-primary-foreground/80 max-w-xl mx-auto leading-relaxed">
-              Your support—one-time or monthly—creates lasting change for
-              students across Ethiopia.
+    <>
+      <section className="hero">
+        <div className="wrap split split-7-5">
+          <div className="stack">
+            <p className="eyebrow">{siteConfig.tagline}</p>
+            <h1 className="display">
+              Every <span className="hl">young mind</span> deserves a fair start.
+            </h1>
+            <p className="lead">
+              Housing, food, care and school for students in need across Ethiopia, backed by a five-year plan for
+              lasting change.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <Button
-                asChild
-                size="lg"
-                variant="secondary"
-                className="w-full sm:w-auto min-w-[160px]"
-              >
-                <Link href="/donate">Donate Now</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto min-w-[160px] border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-              >
-                <Link href="/join">Join Us</Link>
-              </Button>
+            <div className="btn-row-stack">
+              <Link className="btn btn-primary" href="/donate">
+                Donate
+              </Link>
+              <Link className="btn btn-outline" href="/join">
+                Join us
+              </Link>
             </div>
           </div>
-        </section>
-      </main>
-    </div>
+          <div className="hero-media">
+            <Image
+              className="arch"
+              src="/images/hero.jpg"
+              alt="A young student smiling and holding a small globe"
+              width={1800}
+              height={1394}
+              sizes="(min-width: 900px) 42vw, 100vw"
+              priority
+            />
+            <span className="script" aria-hidden="true">
+              Same table. Brighter futures.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="live-title">
+        <div className="wrap">
+          <div className="paper campaign-banner reveal">
+            <div className="stack-sm">
+              <p className="badge">
+                <span className="dot" />
+                Live now · {liveCampaign.shortDate} · Silver Spring
+              </p>
+              <h2 id="live-title" className="h3 text-[clamp(1.625rem,1.3rem+1.2vw,2.375rem)]">
+                {liveCampaign.name}
+              </h2>
+              <Link className="arrow-link" href={liveCampaign.href}>
+                Event details
+              </Link>
+            </div>
+            <CampaignTracker
+              goalCents={liveCampaign.goalCents}
+              raisedCents={progress?.raisedCents ?? null}
+              donorCount={progress?.donorCount}
+            />
+            <Link className="btn btn-gold btn-block" href={liveCampaign.donateHref}>
+              Give
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="pillars-title">
+        <div className="wrap stack">
+          <h2 id="pillars-title" className="h2 center">
+            What your support covers
+          </h2>
+          <PillarGrid className="mt-12" />
+          <p className="center mt-8">
+            <Link className="arrow-link" href="/initiatives">
+              See our initiatives
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      <section className="section band-white" aria-labelledby="gift-title">
+        <div className="wrap">
+          <div className="stack max-w-[640px]">
+            <p className="eyebrow">Where your gift goes</p>
+            <h2 id="gift-title" className="h2">
+              Small amounts, real things in a student’s hands.
+            </h2>
+          </div>
+          <div className="gift-list mt-12">
+            {giftLadder.map((gift) => (
+              <div className="gift" key={gift.amount}>
+                <span className="gift-amount">${gift.amount}</span>
+                <div>
+                  <h3 className="h3">{gift.title}</h3>
+                  <p className="muted">{gift.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="btn-row mt-12">
+            <Link className="btn btn-primary" href="/donate">
+              Give once
+            </Link>
+            <Link className="btn btn-outline" href="/donate/subscribe">
+              Give monthly from $3
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="impact-title">
+        <div className="wrap split">
+          <div className="stack">
+            <p className="eyebrow">Our impact</p>
+            <h2 id="impact-title" className="h2">
+              What we raised together
+            </h2>
+            <Link className="arrow-link" href="/impact">
+              Read the 2025–26 annual report
+            </Link>
+          </div>
+          <div className="grid-2">
+            {pastCampaigns.map((campaign) => (
+              <div className="stat reveal" key={campaign.name}>
+                <span className="stat-num">{campaign.raisedLabel}</span>
+                <span className="stat-label">
+                  {campaign.name} · {campaign.period}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section band-white" aria-labelledby="event-title">
+        <div className="wrap event-feature">
+          <Link href={liveCampaign.href} className="block">
+            <Image
+              src={liveCampaign.flyer.src}
+              alt={`${liveCampaign.name} event flyer`}
+              width={liveCampaign.flyer.width}
+              height={liveCampaign.flyer.height}
+              sizes="(min-width: 900px) 45vw, 100vw"
+              className="w-full rounded-[var(--radius)] aspect-[4/5] object-cover object-top"
+            />
+          </Link>
+          <div className="stack">
+            <p className="eyebrow">Upcoming event</p>
+            <h2 id="event-title" className="h2">
+              {liveCampaign.name}
+            </h2>
+            <p className="lead">
+              An afternoon of coffee, tea, board games and connection, all in support of students in Ethiopia.
+            </p>
+            <FactList
+              items={[
+                { icon: "calendar", label: "Date", value: liveCampaign.dateLabel },
+                { icon: "clock", label: "Time", value: liveCampaign.time },
+                { icon: "pin", label: "Place", value: `${liveCampaign.venue}, Silver Spring, MD` },
+              ]}
+            />
+            <div className="btn-row">
+              <Link className="btn btn-primary" href={liveCampaign.href}>
+                See event
+              </Link>
+              <Link className="btn btn-outline" href="/events">
+                All events
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-tight band-forest">
+        <div className="wrap flex flex-wrap items-center justify-between gap-6">
+          <div className="stack-sm">
+            <p className="eyebrow">Follow along</p>
+            <h2 className="h3 text-[clamp(1.5rem,1.2rem+1vw,2rem)]">Photos and updates from students and events.</h2>
+          </div>
+          <a className="btn btn-gold" href={siteConfig.instagram} target="_blank" rel="noopener noreferrer">
+            <Icon name="instagram" />
+            {siteConfig.instagramHandle}
+          </a>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="news-title">
+        <div className="wrap split">
+          <div className="stack">
+            <h2 id="news-title" className="h2">
+              Stories, not spam.
+            </h2>
+            <p className="lead">About one email a month: campaign progress, student stories and upcoming events.</p>
+          </div>
+          <NewsletterForm />
+        </div>
+      </section>
+
+      <DonateBand
+        title="Be the reason a student stays in school."
+        showTrust
+        secondary={{ href: "/donate/subscribe", label: "Give monthly" }}
+      />
+    </>
   );
 }

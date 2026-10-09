@@ -1,5 +1,3 @@
-export { escapeHtml } from "./html.ts";
-
 type JsonParseResult =
   | {
       ok: true;
@@ -27,6 +25,7 @@ type RateLimitResult =
     };
 
 const rateLimitStore = new Map<string, RateLimitEntry>();
+const rateLimitPruneThreshold = 10_000;
 
 export function buildAllowedOrigins(value: string | undefined): Set<string> {
   const origins = new Set<string>();
@@ -122,6 +121,10 @@ export function rateLimit(
   windowMs: number,
   now = Date.now()
 ): RateLimitResult {
+  if (rateLimitStore.size >= rateLimitPruneThreshold) {
+    pruneExpiredEntries(now);
+  }
+
   const existing = rateLimitStore.get(key);
 
   if (!existing || existing.resetAt <= now) {
@@ -149,6 +152,55 @@ export function rateLimit(
     allowed: true,
     retryAfterSeconds: 0,
   };
+}
+
+function pruneExpiredEntries(now: number): void {
+  for (const [key, entry] of rateLimitStore) {
+    if (entry.resetAt <= now) {
+      rateLimitStore.delete(key);
+    }
+  }
+}
+
+type PublicPostLimit = {
+  key: string;
+  limit: number;
+  windowMs: number;
+};
+
+/**
+ * Shared checks for public form endpoints: same-site origin and per-IP rate limit.
+ * Returns an error response to send, or null when the request may continue.
+ */
+export function guardPublicPost(request: Request, { key, limit, windowMs }: PublicPostLimit): Response | null {
+  if (!isAllowedOrigin(request.headers.get("origin"), getAllowedOrigins(request))) {
+    return Response.json({ error: "Invalid request origin" }, { status: 403 });
+  }
+
+  const result = rateLimit(`${key}:${getClientIp(request.headers)}`, limit, windowMs);
+  if (!result.allowed) {
+    return Response.json(
+      { error: "Too many requests" },
+      { status: 429, headers: { "Retry-After": String(result.retryAfterSeconds) } }
+    );
+  }
+
+  return null;
+}
+
+function getAllowedOrigins(request: Request): Set<string> {
+  const configuredOrigins = buildAllowedOrigins(process.env.SECURITY_ALLOWED_ORIGINS);
+
+  if (configuredOrigins.size > 0) {
+    return configuredOrigins;
+  }
+
+  return new Set([new URL(request.url).origin]);
+}
+
+/** Origin for redirect URLs. Production always uses the configured site URL, never the Host header. */
+export function getSiteOrigin(request: Request, configuredSiteUrl: string): string {
+  return process.env.NODE_ENV === "production" ? configuredSiteUrl : new URL(request.url).origin;
 }
 
 export function resetRateLimitStoreForTests(): void {

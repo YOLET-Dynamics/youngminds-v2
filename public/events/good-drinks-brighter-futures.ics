@@ -1,0 +1,18 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//YoungMinds ET//Events//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:good-drinks-2026@youngmindset.org
+DTSTAMP:20261009T000000Z
+DTSTART:20261017T180000Z
+DTEND:20261017T210000Z
+SUMMARY:Good Drinks\, Brighter Futures — YoungMinds ET
+LOCATION:Buna & Barley\, 901 Silver Spring Ave\, Silver Spring\, MD 20910
+DESCRIPTION:Community fundraiser. Coffee\, tea\, board games and connection
+ . Help raise $5\,000 for students in Ethiopia. https://www.youngmindset.or
+ g/events/good-drinks-brighter-futures
+URL:https://www.youngmindset.org/events/good-drinks-brighter-futures
+END:VEVENT
+END:VCALENDAR

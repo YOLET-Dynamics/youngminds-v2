@@ -1,13 +1,6 @@
 import { z } from "zod";
 import { escapeHtml } from "./html.ts";
-
-export const paymentMethodValues = [
-  "visa",
-  "mastercard",
-  "amex",
-  "paypal",
-  "other",
-] as const;
+import { subscriptionChangeOptions, subscriptionChangeValues } from "./subscription-changes.ts";
 
 export const joinSubmissionSchema = z
   .object({
@@ -25,6 +18,13 @@ export const joinSubmissionSchema = z
         "Please enter a valid phone number"
       ),
     message: z.string().trim().min(10).max(1000),
+    newsletter: z.boolean().optional(),
+  })
+  .strict();
+
+export const newsletterSignupSchema = z
+  .object({
+    email: z.string().trim().email().max(254),
   })
   .strict();
 
@@ -32,8 +32,8 @@ export const subscriptionManagementSchema = z
   .object({
     fullName: z.string().trim().min(2).max(100),
     email: z.string().trim().email().max(254),
-    paymentMethod: z.enum(paymentMethodValues),
-    reason: z.string().trim().min(10).max(500),
+    change: z.enum(subscriptionChangeValues),
+    details: z.string().trim().max(1000).optional(),
   })
   .strict();
 
@@ -84,6 +84,9 @@ export function buildJoinEmail(submission: JoinSubmission): EmailContent {
 export function buildSubscriptionManagementEmail(
   submission: SubscriptionManagementSubmission
 ): EmailContent {
+  const change = subscriptionChangeOptions[submission.change];
+  const details = submission.details || "None provided";
+
   return {
     subject: "UNVERIFIED Subscription Management Request",
     html: `
@@ -95,10 +98,10 @@ export function buildSubscriptionManagementEmail(
         <div style="background-color: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
           <p style="margin-bottom: 16px;"><strong>Name:</strong> ${escapeHtml(submission.fullName)}</p>
           <p style="margin-bottom: 16px;"><strong>Email:</strong> ${escapeHtml(submission.email)}</p>
-          <p style="margin-bottom: 16px;"><strong>Payment Method:</strong> ${escapeHtml(submission.paymentMethod)}</p>
+          <p style="margin-bottom: 16px;"><strong>Requested change:</strong> ${escapeHtml(change)}</p>
           <div style="margin-top: 16px;">
-            <p style="margin-bottom: 8px;"><strong>Reason for Change:</strong></p>
-            <p style="background-color: #f8fafc; padding: 12px; border-radius: 4px; border-left: 4px solid #1e293b;">${escapeHtml(submission.reason)}</p>
+            <p style="margin-bottom: 8px;"><strong>Details:</strong></p>
+            <p style="background-color: #f8fafc; padding: 12px; border-radius: 4px; border-left: 4px solid #1e293b;">${escapeHtml(details)}</p>
           </div>
         </div>
         <p style="text-align: center; margin-top: 24px; color: #64748b; font-size: 14px;">This is an automated message from YoungMinds ET</p>
@@ -111,10 +114,10 @@ export function buildSubscriptionManagementEmail(
       "",
       `Name: ${submission.fullName}`,
       `Email: ${submission.email}`,
-      `Payment Method: ${submission.paymentMethod}`,
+      `Requested change: ${change}`,
       "",
-      "Reason for Change:",
-      submission.reason,
+      "Details:",
+      details,
     ].join("\n"),
   };
 }
