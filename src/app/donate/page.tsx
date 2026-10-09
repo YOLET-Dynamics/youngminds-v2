@@ -48,15 +48,10 @@ export default async function DonatePage({ searchParams }: PageProps<"/donate">)
                 { icon: "heart", label: "Direct impact", value: "Gifts go to students’ housing, meals, care and school." },
               ]}
             />
+            <p className="small muted mt-6">
+              Questions about your gift? <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+            </p>
           </div>
-        </div>
-      </section>
-
-      <section className="section-tight band-white">
-        <div className="wrap center stack-sm">
-          <p className="small muted">
-            Questions about your gift? <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
-          </p>
         </div>
       </section>
     </>

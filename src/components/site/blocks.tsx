@@ -88,7 +88,7 @@ export function DonateBand({ eyebrow, title, subtitle, primary = { href: "/donat
   showTrust?: boolean;
 }) {
   return (
-    <section className="section band-deep">
+    <section className="section band-forest">
       <div className="wrap donate-band">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
         <h2 className="h1 max-w-[16em]">{title}</h2>

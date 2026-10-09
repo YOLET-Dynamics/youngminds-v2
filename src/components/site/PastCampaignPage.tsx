@@ -53,7 +53,7 @@ export function PastCampaignPage({ campaign, title, intro }: {
         </div>
       </section>
 
-      <section className="section band-deep">
+      <section className="section band-forest">
         <div className="wrap donate-band">
           <p className="eyebrow">What’s next</p>
           <h2 className="h1">{liveCampaign.name}</h2>
