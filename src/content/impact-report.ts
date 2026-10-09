@@ -28,7 +28,7 @@ export const impactReport: ImpactReport = {
   period: "2025–2026",
   intro: "What your gifts made possible this year, where the money went, and how far we are toward our five-year vision.",
   pdf: null,
-  stats: [{ value: "$641", label: "Raised in the Matrimony Initiative" }],
+  stats: [],
   allocation: [],
   programs: [
     { pillar: "housing", title: "Housing", summary: null },

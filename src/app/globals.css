@@ -289,7 +289,7 @@
   .input:user-invalid, .textarea:user-invalid { border-color: var(--color-error); }
   .field-error { font-size: var(--fs-small); color: var(--color-error); }
   .check { display: grid; grid-template-columns: 24px 1fr; gap: var(--s-3); align-items: start; font-size: var(--fs-small); color: var(--color-ink-muted); }
-  .check input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--color-forest); }
+  .check input { width: 24px; height: 24px; margin: 0; accent-color: var(--color-forest); }
 
   /* Newsletter: one input group, a single border (no nested double borders) */
   .newsletter-form { display: grid; gap: var(--s-3); max-width: 520px; }

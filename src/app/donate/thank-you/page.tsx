@@ -76,6 +76,15 @@ export default async function ThankYouPage({ searchParams }: PageProps<"/donate/
             <p className="small muted">
               Tag <strong className="text-ink">{siteConfig.instagramHandle}</strong> in your story and we’ll share it.
             </p>
+            <p className="small muted">
+              {gift?.isMonthly ? (
+                <Link href="/subscriptions/manage">Manage your monthly gift</Link>
+              ) : (
+                <>
+                  Want to give every month? <Link href="/donate/subscribe">Monthly giving from $3</Link>
+                </>
+              )}
+            </p>
           </div>
           <Image
             className="arch aspect-[4/5] h-auto"
@@ -95,26 +104,6 @@ export default async function ThankYouPage({ searchParams }: PageProps<"/donate/
             <p className="muted">One email a month with campaign progress and student stories.</p>
           </div>
           <NewsletterForm />
-        </div>
-      </section>
-
-      <section className="section-tight">
-        <div className="wrap center stack-sm">
-          {gift?.isMonthly ? (
-            <>
-              <p className="muted">Need to change your monthly gift later?</p>
-              <Link className="arrow-link" href="/subscriptions/manage">
-                Manage your monthly gift
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="muted">Want to give every month?</p>
-              <Link className="arrow-link" href="/donate/subscribe">
-                Monthly giving from $3
-              </Link>
-            </>
-          )}
         </div>
       </section>
     </>
