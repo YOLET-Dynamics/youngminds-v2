@@ -11,8 +11,8 @@ import { liveCampaign, pastCampaigns } from "@/lib/campaigns";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: `${report.period} Annual Report`,
-  description: `YoungMinds ET ${report.period} annual report: what your gifts made possible, where the money went, and our five-year vision.`,
+  title: "Impact updates",
+  description: "Campaign totals and updates from YoungMinds ET’s work supporting students in Ethiopia.",
   alternates: { canonical: "/impact" },
 };
 
@@ -38,8 +38,8 @@ export default async function ImpactPage() {
       <section className="hero">
         <div className="wrap split split-7-5 items-end">
           <div className="stack">
-            <p className="eyebrow">Annual report</p>
-            <h1 className="display">{report.period}</h1>
+            <p className="eyebrow">Our impact</p>
+            <h1 className="display">Impact updates</h1>
             <p className="lead">{report.intro}</p>
           </div>
           {report.pdf ? (
@@ -51,7 +51,7 @@ export default async function ImpactPage() {
               </span>
             </a>
           ) : (
-            <p className="small muted">The full report PDF will be available here once it is finalized.</p>
+            <p className="small muted">The {report.period} annual report is being prepared. It will be available here once finalized.</p>
           )}
         </div>
       </section>

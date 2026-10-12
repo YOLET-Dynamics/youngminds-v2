@@ -1,8 +1,69 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { buildCheckoutSessionParams, checkoutRequestSchema } from "./donations.ts";
+import { buildCheckoutSessionParams, checkoutRequestSchema, loadCompletedGift } from "./donations.ts";
+import { parseDesignation } from "./campaigns.ts";
+import { getStripe } from "./stripe.ts";
 
 const origin = "https://www.youngmindset.org";
+
+describe("loadCompletedGift", () => {
+  const savedKey = process.env.STRIPE_SECRET_KEY;
+  process.env.STRIPE_SECRET_KEY = "sk_test_local_unit_test";
+  const stripe = getStripe();
+  if (savedKey === undefined) delete process.env.STRIPE_SECRET_KEY;
+  else process.env.STRIPE_SECRET_KEY = savedKey;
+  const sessionId = "cs_test_1234567890";
+  const paidSession = { status: "complete", payment_status: "paid", amount_total: 2500, currency: "usd", mode: "payment" };
+
+  it("confirms only paid gifts and preserves monthly frequency", async (t) => {
+    t.mock.method(stripe.checkout.sessions, "retrieve", async () => paidSession);
+    assert.deepEqual(await loadCompletedGift(sessionId), { status: "paid", amountCents: 2500, isMonthly: false });
+    t.mock.method(stripe.checkout.sessions, "retrieve", async () => ({ ...paidSession, mode: "subscription" }));
+    assert.deepEqual(await loadCompletedGift(sessionId), { status: "paid", amountCents: 2500, isMonthly: true });
+  });
+
+  it("keeps completed but unpaid checkout pending", async (t) => {
+    t.mock.method(stripe.checkout.sessions, "retrieve", async () => ({ ...paidSession, payment_status: "unpaid" }));
+    assert.deepEqual(await loadCompletedGift(sessionId), { status: "pending", amountCents: 2500, isMonthly: false });
+  });
+
+  it("does not confirm open, expired, free or non-USD sessions", async (t) => {
+    for (const changes of [
+      { status: "open" }, { status: "expired" }, { amount_total: null }, { amount_total: 0 },
+      { payment_status: "no_payment_required" }, { currency: "eur" }, { mode: "setup" },
+    ]) {
+      t.mock.method(stripe.checkout.sessions, "retrieve", async () => ({ ...paidSession, ...changes }));
+      assert.equal(await loadCompletedGift(sessionId), null);
+    }
+  });
+
+  it("does not look up missing or malformed session IDs", async (t) => {
+    const retrieve = t.mock.method(stripe.checkout.sessions, "retrieve", async () => paidSession);
+    for (const id of [undefined, "", "invalid", [sessionId]]) {
+      assert.equal(await loadCompletedGift(id), null);
+    }
+    assert.equal(retrieve.mock.callCount(), 0);
+  });
+
+  it("returns unverified when Stripe cannot retrieve the session", async (t) => {
+    t.mock.method(console, "error", () => undefined);
+    t.mock.method(stripe.checkout.sessions, "retrieve", async () => { throw new Error("Unavailable"); });
+    assert.equal(await loadCompletedGift(sessionId), null);
+  });
+});
+
+describe("parseDesignation", () => {
+  it("accepts known campaigns", () => {
+    assert.equal(parseDesignation("adina"), "adina");
+    assert.equal(parseDesignation("good-drinks"), "good-drinks");
+  });
+
+  it("ignores unknown, repeated and inherited campaign names", () => {
+    for (const value of [undefined, "", "other", ["adina", "good-drinks"], "constructor", "toString", "__proto__"]) {
+      assert.equal(parseDesignation(value), undefined);
+    }
+  });
+});
 
 describe("checkoutRequestSchema", () => {
   it("accepts a one-time gift for a known campaign", () => {

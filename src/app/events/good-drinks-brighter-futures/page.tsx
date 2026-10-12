@@ -179,7 +179,7 @@ export default async function GoodDrinksEventPage() {
             </Link>
             <a className="btn btn-outline" href={siteConfig.instagram} target="_blank" rel="noopener noreferrer">
               <Icon name="instagram" />
-              Share on Instagram
+              Visit our Instagram
             </a>
           </div>
         </div>

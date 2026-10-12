@@ -27,10 +27,7 @@ export async function loadCampaignProgress(campaign: DesignationSlug): Promise<C
   }
 }
 
-/**
- * Finds succeeded one-time gifts tagged with the campaign. Stripe search is eventually
- * consistent (about a minute), which matches the tracker's "updated every minute".
- */
+/** Finds succeeded one-time gifts tagged with the campaign. Stripe search is eventually consistent. */
 async function searchCampaignGifts(stripe: Stripe, campaign: DesignationSlug): Promise<SettledGift[]> {
   const gifts: SettledGift[] = [];
   let page: string | undefined;

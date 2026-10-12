@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const values = [
-  { title: "Educate", desc: "Learning is the lever. We fund what keeps students in class." },
+  { title: "Educate", desc: "We help students get the resources they need to stay in school." },
   { title: "Empower", desc: "Students and local partners lead. We listen and back them." },
   { title: "Create change", desc: "We plan in years, not campaigns, and report what we spend." },
 ];
@@ -31,10 +31,10 @@ export default function AboutPage() {
           </div>
           <Image
             className="arch aspect-[4/5] h-auto"
-            src="/images/hero.jpg"
-            alt="A young student smiling and holding a small globe"
-            width={1800}
-            height={1394}
+            src="/images/hero-illustration.jpg"
+            alt="Illustration of three students learning together with books and notebooks"
+            width={1122}
+            height={1402}
             sizes="(min-width: 900px) 40vw, 100vw"
             priority
           />
@@ -48,17 +48,16 @@ export default function AboutPage() {
           </h2>
           <div className="stack">
             <p className="lead text-ink">
-              Our mission is to provide underserved students with access to quality education through sustainable
-              initiatives, backed by the housing, food and care they need to stay in school.
+              We help students in Ethiopia access education by supporting the housing, meals, care, and learning
+              resources they need to stay in school.
             </p>
             <p className="muted">
-              We believe that every child deserves the chance to learn and grow, regardless of their circumstances.
-              By fostering community and collaboration, through partnerships and shared resources, we strive to create
-              an environment where all students can thrive and reach their full potential.
+              We welcome students, families, volunteers, and supporters of all faiths and none. Spiritual schooling
+              is optional and chosen by each family. Access to support does not depend on religious participation.
             </p>
             <p className="muted">
-              Our vision is a future where education unlocks limitless potential, empowering every child in Ethiopia
-              and beyond to achieve a better quality of life without barriers.
+              Our vision is a future where every child in Ethiopia can learn, grow, and shape their future,
+              regardless of background or belief.
             </p>
           </div>
         </div>

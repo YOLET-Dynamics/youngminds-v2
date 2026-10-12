@@ -38,10 +38,10 @@ export default async function HomePage() {
           <div className="hero-media">
             <Image
               className="arch"
-              src="/images/hero.jpg"
-              alt="A young student smiling and holding a small globe"
-              width={1800}
-              height={1394}
+              src="/images/hero-illustration.jpg"
+              alt="Illustration of three students learning together with books and notebooks"
+              width={1122}
+              height={1402}
               sizes="(min-width: 900px) 42vw, 100vw"
               priority
             />
@@ -131,7 +131,7 @@ export default async function HomePage() {
               What we raised together
             </h2>
             <Link className="arrow-link" href="/impact">
-              Read the 2025–26 annual report
+              See our impact updates
             </Link>
           </div>
           <div className="grid-2">

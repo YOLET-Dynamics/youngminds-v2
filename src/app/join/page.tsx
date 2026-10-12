@@ -22,7 +22,7 @@ export default function JoinPage() {
             items={[
               { icon: "calendar", label: "Event volunteers", value: "Set up, welcome guests, run the donation table." },
               { icon: "book", label: "Skills", value: "Design, photography, tutoring, translation." },
-              { icon: "heart", label: "Ambassadors", value: "Bring YoungMinds ET to your church, school or work." },
+              { icon: "heart", label: "Ambassadors", value: "Bring YoungMinds ET to your community, school, place of worship, or workplace." },
             ]}
           />
         </div>

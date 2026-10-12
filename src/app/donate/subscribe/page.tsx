@@ -7,7 +7,7 @@ import { monthlyTierKeys, monthlyTiers, parseDesignation } from "@/lib/campaigns
 export const metadata: Metadata = {
   title: "Give monthly",
   description:
-    "Become a monthly supporter of students in Ethiopia from $3 a month. Change or cancel anytime.",
+    "Become a monthly supporter of students in Ethiopia from $3 a month. Cancel in the portal or contact us to change your amount.",
   alternates: { canonical: "/donate/subscribe" },
 };
 
@@ -22,7 +22,7 @@ export default async function SubscribePage({ searchParams }: PageProps<"/donate
         <div className="wrap stack center">
           <p className="eyebrow">Monthly giving</p>
           <h1 className="display center-x max-w-[12em]">Become a monthly supporter.</h1>
-          <p className="lead center-x">Steady support lets students plan ahead. Change or cancel anytime.</p>
+          <p className="lead center-x">Steady support lets students plan ahead. Cancel in the portal or contact us to change your amount.</p>
         </div>
       </section>
 

@@ -17,7 +17,7 @@ const pillars: { icon: IconName; title: string; desc: string }[] = [
   {
     icon: "flag",
     title: "5-year vision",
-    desc: "A future where education unlocks limitless potential for every child in Ethiopia.",
+    desc: "A long-term plan to help children in Ethiopia stay in school and build their futures.",
   },
 ];
 
@@ -52,14 +52,13 @@ export default function InitiativesPage() {
           <Link className="event-card paper event-feature p-6" href="/initiatives/adina">
             <div className="grid place-items-center aspect-[4/3] rounded-[var(--radius)] bg-forest p-8 text-center">
               <p className="serif text-[clamp(1.5rem,1.2rem+1.4vw,2.25rem)] leading-snug text-white">
-                “Train up a child in the way he should go.”
-                <span className="eyebrow mt-4 block text-gold">Proverbs 22:6</span>
+                Every child deserves the chance to learn and grow.
               </p>
             </div>
             <div className="stack">
               <p className="eyebrow">Adina Project</p>
-              <h3 className="h2">Raising the next generation in Christ</h3>
-              <p className="muted">A Christ-centered initiative dedicated to raising children with love, wisdom and purpose.</p>
+              <h3 className="h2">Helping children learn and grow</h3>
+              <p className="muted">Education, care, and mentorship for children, with optional spiritual schooling chosen by each family.</p>
               <span className="arrow-link">Learn about Adina</span>
             </div>
           </Link>

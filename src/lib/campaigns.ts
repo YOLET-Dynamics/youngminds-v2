@@ -5,12 +5,10 @@
  */
 export const designations = {
   "good-drinks": {
-    slug: "good-drinks",
     name: "Good Drinks, Brighter Futures",
     productId: "ym_campaign_good_drinks",
   },
   adina: {
-    slug: "adina",
     name: "Adina Project",
     productId: "ym_project_adina",
   },
@@ -21,7 +19,7 @@ export type DesignationSlug = keyof typeof designations;
 export const designationSlugs = Object.keys(designations) as [DesignationSlug, ...DesignationSlug[]];
 
 export function parseDesignation(value: string | string[] | undefined): DesignationSlug | undefined {
-  return typeof value === "string" && value in designations ? (value as DesignationSlug) : undefined;
+  return typeof value === "string" && Object.hasOwn(designations, value) ? (value as DesignationSlug) : undefined;
 }
 
 export const liveCampaign = {

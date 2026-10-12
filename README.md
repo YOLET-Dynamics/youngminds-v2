@@ -21,9 +21,9 @@ pnpm dev
 
 - **One-time gifts:** `/donate` posts the chosen amount to `POST /api/checkout`. The server validates it ($1–$10,000) and creates a Stripe Checkout Session. The donor pays on Stripe's hosted page and returns to `/donate/thank-you`.
 - **Monthly gifts:** `/donate/subscribe` lists the four tiers ($3, $10, $25, $50). The tier prices live in `src/lib/campaigns.ts`, never in the browser.
-- **Campaigns:** `/donate?campaign=good-drinks` tags the payment with `metadata.campaign`. The live tracker adds up succeeded, non-refunded one-time payments with that tag. Pages refresh it every 60 seconds.
+- **Campaigns:** `/donate?campaign=good-drinks` tags the payment with `metadata.campaign`. The live tracker adds up succeeded, non-refunded one-time payments with that tag. Pages revalidate on requests after 60 seconds; an already-open page does not update automatically.
 - **Products:** the server creates the Stripe Products it needs (`ym_donation`, `ym_monthly_gift`, `ym_campaign_good_drinks`, `ym_project_adina`) on first use. No Dashboard setup is needed.
-- **Managing a monthly gift:** donors use the Stripe customer portal (link in `src/lib/site.ts`). The fallback form emails `subscriptions@youngmindset.org`.
+- **Managing a monthly gift:** donors update payment methods or cancel through the Stripe customer portal (link in `src/lib/site.ts`). Amount changes and other assistance use the request form, which emails `subscriptions@youngmindset.org`.
 
 ## Stripe setup
 
@@ -39,7 +39,7 @@ pnpm dev
 3. **Receipts.** Settings → Customer emails: turn on "Successful payments", so every donor gets an emailed receipt.
 4. **Branding.** Settings → Branding: upload the logo and set the brand color `#2F4A2A` and accent `#F2B33D`, so Checkout matches the site.
 5. **Payment methods.** Settings → Payment methods: turn on Apple Pay, Google Pay and Link for faster mobile giving.
-6. **Customer portal.** Settings → Billing → Customer portal: allow updating payment methods, switching plans and canceling.
+6. **Customer portal.** Settings → Billing → Customer portal: allow updating payment methods and canceling. Amount changes are handled through the assisted request form; the current tiers share one product and monthly interval.
 7. **Local testing.** `stripe listen --forward-to localhost:3000/api/stripe-webhook` gives a local webhook secret. Use the test card `4242 4242 4242 4242`.
 
 The old Payment Links env vars (`STRIPE_PAYMENT_LINK_ID`, `STRIPE_PAYMENT_LINK_ID_MATRIMONY`) are no longer used. Existing monthly subscribers who joined through old Payment Links are not affected.
@@ -53,6 +53,6 @@ The old Payment Links env vars (`STRIPE_PAYMENT_LINK_ID`, `STRIPE_PAYMENT_LINK_I
 ## Updating content
 
 - **Live campaign and events:** `src/lib/campaigns.ts` (`liveCampaign`, `pastCampaigns`). The calendar file is `public/events/good-drinks-brighter-futures.ics`.
-- **2025–26 annual report:** `src/content/impact-report.ts`. Sections stay hidden until their data is filled in. Put the PDF in `public/reports/` and set `pdf`.
+- **Impact updates and the forthcoming 2025–26 annual report:** `src/content/impact-report.ts`. Sections stay hidden until their data is filled in. Put the PDF in `public/reports/` and set `pdf`.
 - **Site details** (email, phone, Instagram, portal link): `src/lib/site.ts`.
 - **Design tokens and components:** `src/app/globals.css`.

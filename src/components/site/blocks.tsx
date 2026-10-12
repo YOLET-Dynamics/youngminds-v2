@@ -79,10 +79,9 @@ export function TrustRow({ className = "" }: { className?: string }) {
 
 type BandAction = { href: string; label: string };
 
-export function DonateBand({ eyebrow, title, subtitle, primary = { href: "/donate", label: "Donate" }, secondary, showTrust = false }: {
+export function DonateBand({ eyebrow, title, primary = { href: "/donate", label: "Donate" }, secondary, showTrust = false }: {
   eyebrow?: string;
   title: string;
-  subtitle?: string;
   primary?: BandAction;
   secondary?: BandAction;
   showTrust?: boolean;
@@ -92,7 +91,6 @@ export function DonateBand({ eyebrow, title, subtitle, primary = { href: "/donat
       <div className="wrap donate-band">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
         <h2 className="h1 max-w-[16em]">{title}</h2>
-        {subtitle && <p className="muted">{subtitle}</p>}
         {showTrust && <TrustRow />}
         <div className="btn-row justify-center">
           <Link className="btn btn-gold" href={primary.href}>

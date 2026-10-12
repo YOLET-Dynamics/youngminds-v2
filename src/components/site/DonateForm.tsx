@@ -130,7 +130,7 @@ export function DonateForm({ campaign }: { campaign?: DesignationSlug }) {
         </div>
       ) : (
         <div className="form">
-          <p className="muted">Monthly gifts give students steady support. Change or cancel anytime.</p>
+          <p className="muted">Monthly gifts give students steady support. Cancel in the portal or contact us to change your amount.</p>
           <Link className="btn btn-primary btn-block" href={monthlyHref}>
             Choose a monthly tier
           </Link>

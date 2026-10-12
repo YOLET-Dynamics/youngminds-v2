@@ -46,13 +46,13 @@ export const metadata: Metadata = {
     title: siteConfig.defaultTitle,
     description: siteConfig.description,
     locale: "en_US",
-    images: [{ url: "/images/hero.jpg", width: 1800, height: 1394, alt: "A young student smiling and holding a small globe" }],
+    images: [{ url: "/images/hero-illustration.jpg", width: 1122, height: 1402, alt: "Illustration of three students learning together with books and notebooks" }],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.defaultTitle,
     description: siteConfig.description,
-    images: ["/images/hero.jpg"],
+    images: ["/images/hero-illustration.jpg"],
   },
   icons: {
     icon: [

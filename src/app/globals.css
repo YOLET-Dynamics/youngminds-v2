@@ -186,8 +186,8 @@
   /* Hero */
   .hero { padding-top: var(--s-5); padding-bottom: var(--section); }
   .hero-media { position: relative; }
-  .arch { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; object-position: 74% 30%; border-radius: 999px 999px var(--radius) var(--radius) / 50% 50% var(--radius) var(--radius); }
-  @media (min-width: 900px) { .arch { aspect-ratio: auto; height: 600px; } }
+  .arch { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; object-position: center; border-radius: 999px 999px var(--radius) var(--radius) / 50% 50% var(--radius) var(--radius); }
+  @media (min-width: 900px) { .arch { aspect-ratio: 4 / 5; height: auto; } }
   .hero-media .script { position: absolute; left: -6px; bottom: -18px; background: var(--color-cream); padding: 4px 14px; border-radius: 12px; }
   @media (min-width: 1200px) { .hero-media .script { left: -64px; bottom: 40px; } }
 

@@ -60,10 +60,6 @@ function isAllowedOrigin(
   origin: string | null,
   allowedOrigins: Set<string>
 ): boolean {
-  if (allowedOrigins.size === 0) {
-    return true;
-  }
-
   if (!origin) {
     return false;
   }
@@ -79,20 +75,28 @@ export async function parseJsonBody(
   request: Request,
   maxBytes: number
 ): Promise<JsonParseResult> {
-  const body = await request.text();
-
-  if (Buffer.byteLength(body, "utf8") > maxBytes) {
-    return {
-      ok: false,
-      status: 413,
-      message: "Request body is too large",
-    };
-  }
+  const reader = request.body?.getReader();
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
 
   try {
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        bytes += value.byteLength;
+        if (bytes > maxBytes) {
+          await reader.cancel().catch(() => undefined);
+          return { ok: false, status: 413, message: "Request body is too large" };
+        }
+        chunks.push(value);
+      }
+    }
+
     return {
       ok: true,
-      value: JSON.parse(body) as unknown,
+      value: JSON.parse(Buffer.concat(chunks, bytes).toString("utf8")) as unknown,
     };
   } catch {
     return {
@@ -100,6 +104,8 @@ export async function parseJsonBody(
       status: 400,
       message: "Invalid JSON body",
     };
+  } finally {
+    reader?.releaseLock();
   }
 }
 

@@ -72,7 +72,7 @@ export function CampaignTracker({
               <strong>{percent}%</strong>
               {donorCount !== undefined && ` · ${donorCount} ${donorCount === 1 ? "donor" : "donors"}`}
             </span>
-            <span>Updated every minute</span>
+            <span>Recent campaign total</span>
           </>
         )}
       </div>

@@ -1,30 +1,31 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { BackLink, DonateBand } from "@/components/site/blocks";
 
 export const metadata: Metadata = {
   title: "Adina Project",
   description:
-    "A Christ-centered initiative dedicated to raising children in Ethiopia with love, wisdom, and purpose through education and spiritual guidance.",
+    "Education, care, and mentorship for children in Ethiopia, with optional spiritual schooling chosen by each family.",
   alternates: { canonical: "/initiatives/adina" },
 };
 
 const values = [
   {
-    title: "Christ-centered guidance",
-    desc: "Teaching children the way of Christ, helping them build a strong spiritual foundation and live with faith and integrity.",
+    title: "Learning & growth",
+    desc: "Helping children build knowledge, confidence, and the skills they need for their future.",
   },
   {
     title: "Mentorship & leadership",
-    desc: "Providing role models who guide them in wisdom, discipline, and purpose, following Jesus’ example of servant leadership.",
+    desc: "Connecting children with role models who encourage them to learn, lead, and care for others.",
   },
   {
-    title: "A family in Christ",
-    desc: "Creating a community of love and support, where children feel safe, valued, and encouraged in their faith journey.",
+    title: "A caring community",
+    desc: "Creating a place where children feel safe, valued, and supported, regardless of their background or belief.",
   },
   {
     title: "Serving with compassion",
-    desc: "Providing essential resources to children in need, ensuring they grow in a nurturing and faith-driven environment.",
+    desc: "Helping children access the meals, care, and learning resources they need to thrive.",
   },
 ];
 
@@ -38,10 +39,10 @@ export default function AdinaProjectPage() {
         <div className="wrap split split-7-5 mt-4">
           <div className="stack">
             <p className="eyebrow">Adina Project</p>
-            <h1 className="display">Raising the next generation in Christ.</h1>
+            <h1 className="display">Helping children grow through education, care, and mentorship.</h1>
             <p className="lead">
-              We believe that every child deserves to grow in a faith-filled, nurturing environment, surrounded by
-              mentors, spiritual guidance, and a family they can rely on.
+              Every child deserves a safe place to learn, caring mentors, and a community they can rely on.
+              Adina supports children and respects each family’s background and beliefs.
             </p>
             <div className="btn-row-stack">
               <Link className="btn btn-primary" href={donateHref}>
@@ -52,21 +53,25 @@ export default function AdinaProjectPage() {
               </Link>
             </div>
           </div>
-          <figure className="m-0 grid place-items-center gap-4 rounded-[999px_999px_var(--radius)_var(--radius)/50%_50%_var(--radius)_var(--radius)] bg-forest px-8 py-20 text-center aspect-[4/5]">
-            <blockquote className="serif m-0 text-[clamp(1.5rem,1.2rem+1.2vw,2.125rem)] leading-snug text-white">
-              “Let the little children come to me.”
-            </blockquote>
-            <figcaption className="eyebrow text-gold">Matthew 19:14</figcaption>
-          </figure>
+          <Image
+            className="arch aspect-[4/5] h-auto"
+            src="/images/hero-illustration.jpg"
+            alt="Illustration of three students learning together with books and notebooks"
+            width={1122}
+            height={1402}
+            sizes="(min-width: 900px) 40vw, 100vw"
+            priority
+          />
         </div>
       </section>
 
       <section className="section band-white">
         <div className="wrap narrow center stack">
-          <blockquote className="serif h2 m-0 font-normal">
-            “Train up a child in the way he should go; even when he is old he will not depart from it.”
-          </blockquote>
-          <p className="eyebrow">Proverbs 22:6</p>
+          <h2 className="h2">Everyone is welcome.</h2>
+          <p className="lead">
+            We welcome students, families, volunteers, and supporters of all faiths and none.
+            Access to support does not depend on religious participation.
+          </p>
         </div>
       </section>
 
@@ -89,11 +94,10 @@ export default function AdinaProjectPage() {
 
       <section className="section band-white">
         <div className="wrap narrow stack">
-          <h2 className="h2">Following Christ’s call to serve</h2>
+          <h2 className="h2">Spiritual schooling is a family choice.</h2>
           <p className="lead">
-            Jesus taught us to care for the vulnerable, to love unconditionally, and to build each other up in faith.
-            The Adina Project is our response to that calling—a mission to raise children in the light of Christ,
-            equipping them with wisdom, strength, and a deep relationship with God.
+            Families who want Christian spiritual schooling can choose it as an optional part of Adina’s support.
+            Children receive education, care, and mentorship whether or not they take part.
           </p>
         </div>
       </section>

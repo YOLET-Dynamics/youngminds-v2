@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { z } from "zod";
+import { getStripe } from "./stripe.ts";
 import {
   designations,
   designationSlugs,
@@ -156,4 +157,39 @@ async function createProductIfMissing(stripe: Stripe, product: CheckoutProduct):
 
 function isStripeErrorCode(error: unknown, code: string): boolean {
   return error instanceof Stripe.errors.StripeError && error.code === code;
+}
+
+type CompletedGift = {
+  status: "paid" | "pending";
+  amountCents: number;
+  isMonthly: boolean;
+};
+
+const sessionIdPattern = /^cs_(test|live)_[A-Za-z0-9]{10,200}$/;
+
+export async function loadCompletedGift(sessionId: unknown): Promise<CompletedGift | null> {
+  if (typeof sessionId !== "string" || !sessionIdPattern.test(sessionId)) {
+    return null;
+  }
+
+  try {
+    const session = await getStripe().checkout.sessions.retrieve(sessionId);
+    if (
+      session.status !== "complete" ||
+      session.amount_total === null || session.amount_total <= 0 ||
+      session.currency !== "usd" ||
+      session.mode === "setup" ||
+      session.payment_status === "no_payment_required"
+    ) {
+      return null;
+    }
+    return {
+      status: session.payment_status === "paid" ? "paid" : "pending",
+      amountCents: session.amount_total,
+      isMonthly: session.mode === "subscription",
+    };
+  } catch (error) {
+    console.error("Failed to load Checkout Session for thank-you page:", error);
+    return null;
+  }
 }

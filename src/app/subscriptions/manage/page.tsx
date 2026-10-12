@@ -5,7 +5,7 @@ import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Manage your monthly gift",
-  description: "Update your card, change your amount, or cancel your monthly gift to YoungMinds ET.",
+  description: "Update your card or cancel in the Stripe portal, or request a change to your monthly gift amount.",
   alternates: { canonical: "/subscriptions/manage" },
 };
 
@@ -17,7 +17,7 @@ export default function ManageSubscriptionPage() {
           <p className="eyebrow">Monthly giving</p>
           <h1 className="h1">Manage your monthly gift</h1>
           <p className="lead">
-            Update your card, change your amount, or cancel. It takes about a minute in the secure Stripe portal.
+            Update your card or cancel in the secure Stripe portal. To change your amount, use the request form below.
           </p>
           <div className="paper stack">
             <h2 className="h3">Self-service portal</h2>
@@ -32,8 +32,8 @@ export default function ManageSubscriptionPage() {
 
       <section className="section-tight pt-0">
         <div className="wrap narrow stack">
-          <h2 className="h3">Need a hand instead?</h2>
-          <p className="muted">Send us the details and we’ll make the change for you within two business days.</p>
+          <h2 className="h3">Change your amount or ask for help</h2>
+          <p className="muted">Send us the details. We’ll reply within two business days and verify your request before making changes.</p>
           <ManageSubscriptionForm />
         </div>
       </section>
