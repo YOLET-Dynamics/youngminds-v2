@@ -17,6 +17,14 @@ pnpm dev
 | `pnpm lint` | ESLint |
 | `pnpm test` | Unit tests (Node test runner) |
 
+## Cloudflare deployment
+
+The saved `wrangler.jsonc` deploys to `youngmindset`, with a matching self-reference, both custom domains, and dashboard variables preserved.
+
+In Workers Builds, leave **Build command** empty and use **Deploy command** `pnpm exec wrangler deploy`. Wrangler runs the OpenNext build configured in `wrangler.jsonc`; a separate `pnpm run build` would build the app twice.
+
+Keep Stripe and Resend secrets in the Worker's runtime **Variables and Secrets**. Set `NEXT_PUBLIC_SITE_URL` in **Build variables and secrets** as well. To load campaign totals during prerendering, also provide `STRIPE_SECRET_KEY` as a build secret; without it, the build uses the unavailable-total fallback. Never put secret values in the repository.
+
 ## How giving works
 
 - **One-time gifts:** `/donate` posts the chosen amount to `POST /api/checkout`. The server validates it ($1–$10,000) and creates a Stripe Checkout Session. The donor pays on Stripe's hosted page and returns to `/donate/thank-you`.
