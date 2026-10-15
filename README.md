@@ -21,7 +21,7 @@ pnpm dev
 
 The saved `wrangler.jsonc` deploys to `youngmindset`, with a matching self-reference, both custom domains, and dashboard variables preserved.
 
-In Workers Builds, leave **Build command** empty and use **Deploy command** `pnpm exec wrangler deploy`. Wrangler runs the OpenNext build configured in `wrangler.jsonc`; a separate `pnpm run build` would build the app twice.
+In Workers Builds, set **Build command** to `pnpm exec opennextjs-cloudflare build` and **Deploy command** to `pnpm exec opennextjs-cloudflare deploy`. OpenNext builds the Next.js app and Worker bundle before deployment.
 
 Keep Stripe and Resend secrets in the Worker's runtime **Variables and Secrets**. Set `NEXT_PUBLIC_SITE_URL` in **Build variables and secrets** as well. To load campaign totals during prerendering, also provide `STRIPE_SECRET_KEY` as a build secret; without it, the build uses the unavailable-total fallback. Never put secret values in the repository.
 
