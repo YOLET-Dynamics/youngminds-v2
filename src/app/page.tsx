@@ -5,13 +5,18 @@ import { DonateBand, FactList, PillarGrid } from "@/components/site/blocks";
 import { Icon } from "@/components/site/Icon";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
 import { loadCampaignProgress } from "@/lib/campaign-progress";
-import { giftLadder, liveCampaign, pastCampaigns } from "@/lib/campaigns";
+import { formatUsd, giftLadder, goodDrinks, liveCampaign, pastCampaigns } from "@/lib/campaigns";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const progress = await loadCampaignProgress(liveCampaign.slug);
+  const progress = await loadCampaignProgress(goodDrinks);
+  const isLive = liveCampaign !== null;
+  const raisedStats = [
+    ...(progress ? [{ value: formatUsd(progress.raisedCents), label: `${goodDrinks.name} · Oct 2026` }] : []),
+    ...pastCampaigns.map((campaign) => ({ value: campaign.raisedLabel, label: `${campaign.name} · ${campaign.period}` })),
+  ].slice(0, 2);
 
   return (
     <>
@@ -52,32 +57,34 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="live-title">
-        <div className="wrap">
-          <div className="paper campaign-banner reveal">
-            <div className="stack-sm">
-              <p className="badge">
-                <span className="dot" />
-                Live now · {liveCampaign.shortDate} · Silver Spring
-              </p>
-              <h2 id="live-title" className="h3 text-[clamp(1.625rem,1.3rem+1.2vw,2.375rem)]">
-                {liveCampaign.name}
-              </h2>
-              <Link className="arrow-link" href={liveCampaign.href}>
-                Event details
+      {liveCampaign && (
+        <section aria-labelledby="live-title">
+          <div className="wrap">
+            <div className="paper campaign-banner reveal">
+              <div className="stack-sm">
+                <p className="badge">
+                  <span className="dot" />
+                  Live now · {liveCampaign.shortDate} · Silver Spring
+                </p>
+                <h2 id="live-title" className="h3 text-[clamp(1.625rem,1.3rem+1.2vw,2.375rem)]">
+                  {liveCampaign.name}
+                </h2>
+                <Link className="arrow-link" href={liveCampaign.href}>
+                  Event details
+                </Link>
+              </div>
+              <CampaignTracker
+                goalCents={liveCampaign.goalCents}
+                raisedCents={progress?.raisedCents ?? null}
+                donorCount={progress?.donorCount}
+              />
+              <Link className="btn btn-gold btn-block" href={liveCampaign.donateHref}>
+                Give
               </Link>
             </div>
-            <CampaignTracker
-              goalCents={liveCampaign.goalCents}
-              raisedCents={progress?.raisedCents ?? null}
-              donorCount={progress?.donorCount}
-            />
-            <Link className="btn btn-gold btn-block" href={liveCampaign.donateHref}>
-              Give
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="section" aria-labelledby="pillars-title">
         <div className="wrap stack">
@@ -135,12 +142,10 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid-2">
-            {pastCampaigns.map((campaign) => (
-              <div className="stat reveal" key={campaign.name}>
-                <span className="stat-num">{campaign.raisedLabel}</span>
-                <span className="stat-label">
-                  {campaign.name} · {campaign.period}
-                </span>
+            {raisedStats.map((stat) => (
+              <div className="stat reveal" key={stat.label}>
+                <span className="stat-num">{stat.value}</span>
+                <span className="stat-label">{stat.label}</span>
               </div>
             ))}
           </div>
@@ -149,34 +154,36 @@ export default async function HomePage() {
 
       <section className="section band-white" aria-labelledby="event-title">
         <div className="wrap event-feature">
-          <Link href={liveCampaign.href} className="block">
+          <Link href={goodDrinks.href} className="block">
             <Image
-              src={liveCampaign.flyer.src}
-              alt={`${liveCampaign.name} event flyer`}
-              width={liveCampaign.flyer.width}
-              height={liveCampaign.flyer.height}
+              src={goodDrinks.flyer.src}
+              alt={`${goodDrinks.name} event flyer`}
+              width={goodDrinks.flyer.width}
+              height={goodDrinks.flyer.height}
               sizes="(min-width: 900px) 45vw, 100vw"
               className="w-full rounded-[var(--radius)] aspect-[4/5] object-cover object-top"
             />
           </Link>
           <div className="stack">
-            <p className="eyebrow">Upcoming event</p>
+            <p className="eyebrow">{isLive ? "Upcoming event" : "Recent event"}</p>
             <h2 id="event-title" className="h2">
-              {liveCampaign.name}
+              {goodDrinks.name}
             </h2>
             <p className="lead">
-              An afternoon of coffee, tea, board games and connection, all in support of students in Ethiopia.
+              {isLive
+                ? "An afternoon of coffee, tea, board games and connection, all in support of students in Ethiopia."
+                : `Thank you to everyone who joined us at ${goodDrinks.venue}${progress ? ` and helped raise ${formatUsd(progress.raisedCents)}` : ""} for students in Ethiopia.`}
             </p>
             <FactList
               items={[
-                { icon: "calendar", label: "Date", value: liveCampaign.dateLabel },
-                { icon: "clock", label: "Time", value: liveCampaign.time },
-                { icon: "pin", label: "Place", value: `${liveCampaign.venue}, Silver Spring, MD` },
+                { icon: "calendar", label: "Date", value: goodDrinks.dateLabel },
+                { icon: "clock", label: "Time", value: goodDrinks.time },
+                { icon: "pin", label: "Place", value: `${goodDrinks.venue}, Silver Spring, MD` },
               ]}
             />
             <div className="btn-row">
-              <Link className="btn btn-primary" href={liveCampaign.href}>
-                See event
+              <Link className="btn btn-primary" href={goodDrinks.href}>
+                {isLive ? "See event" : "See the recap"}
               </Link>
               <Link className="btn btn-outline" href="/events">
                 All events

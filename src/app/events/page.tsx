@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CampaignTracker } from "@/components/site/CampaignTracker";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
 import { loadCampaignProgress } from "@/lib/campaign-progress";
-import { liveCampaign, pastCampaigns } from "@/lib/campaigns";
+import { goodDrinks, pastCampaigns } from "@/lib/campaigns";
 
 export const revalidate = 60;
 
@@ -16,7 +16,8 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const progress = await loadCampaignProgress(liveCampaign.slug);
+  const progress = await loadCampaignProgress(goodDrinks);
+  const isLive = goodDrinks.status === "live";
 
   return (
     <>
@@ -30,15 +31,15 @@ export default async function EventsPage() {
       <section aria-labelledby="upcoming-title">
         <div className="wrap">
           <h2 id="upcoming-title" className="eyebrow mb-4">
-            Upcoming
+            {isLive ? "Upcoming" : "Most recent"}
           </h2>
           <div className="paper event-feature p-6">
-            <Link href={liveCampaign.href} className="block" tabIndex={-1} aria-hidden="true">
+            <Link href={goodDrinks.href} className="block" tabIndex={-1} aria-hidden="true">
               <Image
-                src={liveCampaign.flyer.src}
+                src={goodDrinks.flyer.src}
                 alt=""
-                width={liveCampaign.flyer.width}
-                height={liveCampaign.flyer.height}
+                width={goodDrinks.flyer.width}
+                height={goodDrinks.flyer.height}
                 sizes="(min-width: 900px) 45vw, 100vw"
                 className="w-full aspect-[4/3] object-cover object-top rounded-[var(--radius)]"
               />
@@ -49,28 +50,33 @@ export default async function EventsPage() {
                   <span className="m">Oct</span>
                   <span className="d">17</span>
                 </span>
-                <p className="badge">
-                  <span className="dot" />
-                  Live campaign
-                </p>
+                {isLive ? (
+                  <p className="badge">
+                    <span className="dot" />
+                    Live campaign
+                  </p>
+                ) : (
+                  <span className="badge badge-done">Completed</span>
+                )}
               </div>
               <h3 className="h2">
-                <Link href={liveCampaign.href} className="text-[inherit] no-underline hover:underline">
-                  {liveCampaign.name}
+                <Link href={goodDrinks.href} className="text-[inherit] no-underline hover:underline">
+                  {goodDrinks.name}
                 </Link>
               </h3>
               <p className="small muted">
-                {liveCampaign.dateLabel} · {liveCampaign.time} · {liveCampaign.venue}, Silver Spring, MD
+                {goodDrinks.dateLabel} · {goodDrinks.time} · {goodDrinks.venue}, Silver Spring, MD
               </p>
               <CampaignTracker
-                goalCents={liveCampaign.goalCents}
+                goalCents={goodDrinks.goalCents}
                 raisedCents={progress?.raisedCents ?? null}
                 donorCount={progress?.donorCount}
+                status={goodDrinks.status}
                 size="compact"
               />
               <div className="btn-row">
-                <Link className="btn btn-primary" href={liveCampaign.href}>
-                  See event and give
+                <Link className="btn btn-primary" href={goodDrinks.href}>
+                  {isLive ? "See event and give" : "See the recap"}
                 </Link>
               </div>
             </div>

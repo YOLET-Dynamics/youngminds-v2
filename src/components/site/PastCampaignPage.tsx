@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CampaignTracker } from "./CampaignTracker";
-import { BackLink } from "./blocks";
+import { BackLink, DonateBand } from "./blocks";
 import { liveCampaign, pastCampaigns } from "@/lib/campaigns";
 
 type PastCampaign = (typeof pastCampaigns)[number];
@@ -53,21 +53,29 @@ export function PastCampaignPage({ campaign, title, intro }: {
         </div>
       </section>
 
-      <section className="section band-forest">
-        <div className="wrap donate-band">
-          <p className="eyebrow">What’s next</p>
-          <h2 className="h1">{liveCampaign.name}</h2>
-          <p className="muted">{liveCampaign.dateLabel} · Silver Spring, MD</p>
-          <div className="btn-row justify-center">
-            <Link className="btn btn-gold" href={liveCampaign.href}>
-              See the live campaign
-            </Link>
-            <Link className="btn btn-outline-light" href="/donate">
-              Donate
-            </Link>
+      {liveCampaign ? (
+        <section className="section band-forest">
+          <div className="wrap donate-band">
+            <p className="eyebrow">What’s next</p>
+            <h2 className="h1">{liveCampaign.name}</h2>
+            <p className="muted">{liveCampaign.dateLabel} · Silver Spring, MD</p>
+            <div className="btn-row justify-center">
+              <Link className="btn btn-gold" href={liveCampaign.href}>
+                See the live campaign
+              </Link>
+              <Link className="btn btn-outline-light" href="/donate">
+                Donate
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <DonateBand
+          eyebrow="What’s next"
+          title="Help fund the next campaign."
+          secondary={{ href: "/events", label: "See events" }}
+        />
+      )}
     </>
   );
 }

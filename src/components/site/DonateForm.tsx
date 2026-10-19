@@ -17,7 +17,9 @@ function parseDollars(value: string): number | null {
   return Number(cleaned);
 }
 
+/** `campaign` is preselected; donors can switch to the general fund instead. */
 export function DonateForm({ campaign }: { campaign?: DesignationSlug }) {
+  const [designation, setDesignation] = useState<DesignationSlug | undefined>(campaign);
   const [frequency, setFrequency] = useState<Frequency>("once");
   const [preset, setPreset] = useState<number | null>(25);
   const [custom, setCustom] = useState("");
@@ -26,7 +28,7 @@ export function DonateForm({ campaign }: { campaign?: DesignationSlug }) {
   const customDollars = custom ? parseDollars(custom) : null;
   const dollars = custom ? customDollars : preset;
   const impact = giftLadder.findLast((gift) => dollars !== null && dollars >= gift.amount);
-  const monthlyHref = campaign ? `/donate/subscribe?campaign=${campaign}` : "/donate/subscribe";
+  const monthlyHref = designation ? `/donate/subscribe?campaign=${designation}` : "/donate/subscribe";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,18 +43,36 @@ export function DonateForm({ campaign }: { campaign?: DesignationSlug }) {
     await startCheckout({
       frequency: "once",
       amountCents,
-      ...(campaign ? { campaign } : {}),
+      ...(designation ? { campaign: designation } : {}),
     });
   }
 
   return (
     <form className="paper form" onSubmit={onSubmit} aria-labelledby="give-title" noValidate>
-      <div className="stack-sm">
-        <h2 id="give-title" className="h3">
-          Choose your gift
-        </h2>
-        {campaign && <p className="small muted">Your gift supports {designations[campaign].name}.</p>}
-      </div>
+      <h2 id="give-title" className="h3">
+        Choose your gift
+      </h2>
+
+      {campaign && (
+        <fieldset className="choice-group">
+          <legend>Your gift supports</legend>
+          {[
+            { id: "designation-campaign", value: campaign, label: designations[campaign].name },
+            { id: "designation-general", value: undefined, label: "Where it’s needed most" },
+          ].map((option) => (
+            <div className="choice" key={option.id}>
+              <input
+                type="radio"
+                id={option.id}
+                name="designation"
+                checked={designation === option.value}
+                onChange={() => setDesignation(option.value)}
+              />
+              <label htmlFor={option.id}>{option.label}</label>
+            </div>
+          ))}
+        </fieldset>
+      )}
 
       <fieldset className="choice-group gap-0">
         <legend className="sr-only">Frequency</legend>

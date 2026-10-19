@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { DonateForm } from "@/components/site/DonateForm";
 import { DonateQr } from "@/components/site/DonateQr";
 import { FactList } from "@/components/site/blocks";
-import { parseDesignation } from "@/lib/campaigns";
+import { liveCampaign, parseDesignation } from "@/lib/campaigns";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default async function DonatePage({ searchParams }: PageProps<"/donate">) {
-  const campaign = parseDesignation((await searchParams).campaign);
-  const donatePath = campaign ? `/donate?campaign=${campaign}` : "/donate";
+  const requested = parseDesignation((await searchParams).campaign);
+  const donatePath = requested ? `/donate?campaign=${requested}` : "/donate";
 
   return (
     <>
@@ -27,7 +27,7 @@ export default async function DonatePage({ searchParams }: PageProps<"/donate">)
           </div>
 
           <div className="grid gap-6 min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1">
-            <DonateForm campaign={campaign} />
+            <DonateForm campaign={requested ?? liveCampaign?.slug} />
             <div className="hidden md:flex items-center gap-4 px-2">
               <DonateQr url={`${siteConfig.url}${donatePath}`} size={96} />
               <p className="small muted">On a computer? Scan with your phone to give with Apple Pay or Google Pay.</p>

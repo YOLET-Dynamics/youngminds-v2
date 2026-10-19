@@ -6,7 +6,7 @@ import { DonateBand } from "@/components/site/blocks";
 import { Icon, type IconName } from "@/components/site/Icon";
 import { impactReport as report, type ReportMilestone, type ReportProgram } from "@/content/impact-report";
 import { loadCampaignProgress } from "@/lib/campaign-progress";
-import { liveCampaign, pastCampaigns } from "@/lib/campaigns";
+import { goodDrinks, pastCampaigns } from "@/lib/campaigns";
 
 export const revalidate = 60;
 
@@ -30,7 +30,7 @@ const milestoneDisplay: Record<ReportMilestone["status"], { icon: IconName; labe
 };
 
 export default async function ImpactPage() {
-  const progress = await loadCampaignProgress(liveCampaign.slug);
+  const progress = await loadCampaignProgress(goodDrinks);
   const matrimony = pastCampaigns[1];
 
   return (
@@ -168,15 +168,16 @@ export default async function ImpactPage() {
               </Link>
             </div>
             <div className="stack-sm">
-              <h3 className="h3">{liveCampaign.name} · Oct 2026</h3>
+              <h3 className="h3">{goodDrinks.name} · Oct 2026</h3>
               <CampaignTracker
-                goalCents={liveCampaign.goalCents}
+                goalCents={goodDrinks.goalCents}
                 raisedCents={progress?.raisedCents ?? null}
                 donorCount={progress?.donorCount}
+                status={goodDrinks.status}
                 size="compact"
               />
-              <Link className="arrow-link" href={liveCampaign.href}>
-                See the live campaign
+              <Link className="arrow-link" href={goodDrinks.href}>
+                {goodDrinks.status === "live" ? "See the live campaign" : "See the recap"}
               </Link>
             </div>
           </div>

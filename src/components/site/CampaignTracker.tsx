@@ -59,22 +59,11 @@ export function CampaignTracker({
         <div className="tracker-fill" style={{ width: `${fill}%` }} />
       </div>
       <div className="tracker-meta">
-        {status === "complete" ? (
-          <>
-            <span>
-              <strong>{percent}%</strong> of goal
-            </span>
-            <span>Final total</span>
-          </>
-        ) : (
-          <>
-            <span>
-              <strong>{percent}%</strong>
-              {donorCount !== undefined && ` · ${donorCount} ${donorCount === 1 ? "donor" : "donors"}`}
-            </span>
-            <span>Recent campaign total</span>
-          </>
-        )}
+        <span>
+          <strong>{percent}%</strong> of goal
+          {donorCount !== undefined && ` · ${donorCount} ${donorCount === 1 ? "donor" : "donors"}`}
+        </span>
+        <span>{status === "complete" ? "Final total" : "Recent campaign total"}</span>
       </div>
     </div>
   );

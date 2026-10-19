@@ -29,7 +29,7 @@ Keep Stripe and Resend secrets in the Worker's runtime **Variables and Secrets**
 
 - **One-time gifts:** `/donate` posts the chosen amount to `POST /api/checkout`. The server validates it ($1–$10,000) and creates a Stripe Checkout Session. The donor pays on Stripe's hosted page and returns to `/donate/thank-you`.
 - **Monthly gifts:** `/donate/subscribe` lists the four tiers ($3, $10, $25, $50). The tier prices live in `src/lib/campaigns.ts`, never in the browser.
-- **Campaigns:** `/donate?campaign=good-drinks` tags the payment with `metadata.campaign`. The live tracker adds up succeeded, non-refunded one-time payments with that tag. Pages revalidate on requests after 60 seconds; an already-open page does not update automatically.
+- **Campaigns:** each campaign in `src/lib/campaigns.ts` has a `status` (`live` or `complete`). While one is live, `/donate` preselects it, with "Where it's needed most" as the alternative, so every Donate button tags gifts with `metadata.campaign`. The tracker adds up succeeded, non-refunded one-time payments with that tag, plus `offlineCents` for cash, Zelle or checks. `untaggedWindow` also counts untagged one-time Stripe gifts in a date range, leaving out subscription charges and gifts for other projects; use it only to recover gifts made outside the campaign flow. Pages revalidate on requests after 60 seconds; an already-open page does not update automatically.
 - **Products:** the server creates the Stripe Products it needs (`ym_donation`, `ym_monthly_gift`, `ym_campaign_good_drinks`, `ym_project_adina`) on first use. No Dashboard setup is needed.
 - **Managing a monthly gift:** donors update payment methods or cancel through the Stripe customer portal (link in `src/lib/site.ts`). Amount changes and other assistance use the request form, which emails `subscriptions@youngmindset.org`.
 
@@ -41,6 +41,7 @@ Keep Stripe and Resend secrets in the Worker's runtime **Variables and Secrets**
    - Prices: Write
    - PaymentIntents: Read
    - Charges: Read
+   - Invoices: Read (only for campaigns with `untaggedWindow`, to leave out subscription charges)
 
    Put it in `STRIPE_SECRET_KEY`. Use a test-mode key for local work.
 2. **Webhook.** Add an endpoint at `https://www.youngmindset.org/api/stripe-webhook` for the event `checkout.session.completed`. Put its signing secret in `STRIPE_WEBHOOK_SECRET`. The webhook adds donors who tick Stripe's "send me updates" box to the newsletter.
@@ -60,7 +61,7 @@ The old Payment Links env vars (`STRIPE_PAYMENT_LINK_ID`, `STRIPE_PAYMENT_LINK_I
 
 ## Updating content
 
-- **Live campaign and events:** `src/lib/campaigns.ts` (`liveCampaign`, `pastCampaigns`). The calendar file is `public/events/good-drinks-brighter-futures.ics`.
+- **Live campaign and events:** `src/lib/campaigns.ts`. Set a campaign's `status` to `complete` after the event to show the final total and remove the live banner and mobile donate bar. The calendar file is `public/events/good-drinks-brighter-futures.ics`.
 - **Impact updates and the forthcoming 2025–26 annual report:** `src/content/impact-report.ts`. Sections stay hidden until their data is filled in. Put the PDF in `public/reports/` and set `pdf`.
 - **Site details** (email, phone, Instagram, portal link): `src/lib/site.ts`.
 - **Design tokens and components:** `src/app/globals.css`.

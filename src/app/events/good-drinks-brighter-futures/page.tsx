@@ -6,41 +6,44 @@ import { BackLink, FactList, PillarGrid } from "@/components/site/blocks";
 import { DonateQr } from "@/components/site/DonateQr";
 import { Icon } from "@/components/site/Icon";
 import { loadCampaignProgress } from "@/lib/campaign-progress";
-import { formatUsd, liveCampaign } from "@/lib/campaigns";
+import { formatUsd, goodDrinks } from "@/lib/campaigns";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
 
-const description =
-  "Coffee, tea, board games and connection at Buna & Barley in Silver Spring, MD on Saturday, October 17, 2026, 2–5 PM. Help raise $5,000 for students in Ethiopia.";
+const isLive = goodDrinks.status === "live";
+
+const description = isLive
+  ? "Coffee, tea, board games and connection at Buna & Barley in Silver Spring, MD on Saturday, October 17, 2026, 2–5 PM. Help raise $5,000 for students in Ethiopia."
+  : "Our community fundraiser at Buna & Barley in Silver Spring, MD on October 17, 2026. Thank you for supporting students in Ethiopia.";
 
 export const metadata: Metadata = {
-  title: liveCampaign.name,
+  title: goodDrinks.name,
   description,
-  alternates: { canonical: liveCampaign.href },
+  alternates: { canonical: goodDrinks.href },
   openGraph: {
-    title: `${liveCampaign.name} | YoungMinds ET`,
+    title: `${goodDrinks.name} | YoungMinds ET`,
     description,
-    images: [{ url: liveCampaign.flyer.src, width: liveCampaign.flyer.width, height: liveCampaign.flyer.height }],
+    images: [{ url: goodDrinks.flyer.src, width: goodDrinks.flyer.width, height: goodDrinks.flyer.height }],
   },
 };
 
 const eventJsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
-  name: liveCampaign.name,
+  name: goodDrinks.name,
   description,
-  startDate: liveCampaign.startsAt,
-  endDate: liveCampaign.endsAt,
+  startDate: goodDrinks.startsAt,
+  endDate: goodDrinks.endsAt,
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-  image: `${siteConfig.url}${liveCampaign.flyer.src}`,
+  image: `${siteConfig.url}${goodDrinks.flyer.src}`,
   location: {
     "@type": "Place",
-    name: liveCampaign.venue,
+    name: goodDrinks.venue,
     address: {
       "@type": "PostalAddress",
-      streetAddress: liveCampaign.street,
+      streetAddress: goodDrinks.street,
       addressLocality: "Silver Spring",
       addressRegion: "MD",
       postalCode: "20910",
@@ -58,8 +61,8 @@ const fundUses = [
 ] as const;
 
 export default async function GoodDrinksEventPage() {
-  const progress = await loadCampaignProgress(liveCampaign.slug);
-  const donateUrl = `${siteConfig.url}${liveCampaign.donateHref}`;
+  const progress = await loadCampaignProgress(goodDrinks);
+  const donateUrl = `${siteConfig.url}${goodDrinks.donateHref}`;
 
   return (
     <>
@@ -68,12 +71,12 @@ export default async function GoodDrinksEventPage() {
       <section className="hero">
         <BackLink href="/events" label="All events" />
         <div className="wrap split split-5-7 mt-4 items-start">
-          <a className="media-after-mobile block" href={liveCampaign.flyer.src} target="_blank" rel="noopener">
+          <a className="media-after-mobile block" href={goodDrinks.flyer.src} target="_blank" rel="noopener">
             <Image
-              src={liveCampaign.flyer.src}
-              alt={`${liveCampaign.name} flyer. All event details are listed on this page.`}
-              width={liveCampaign.flyer.width}
-              height={liveCampaign.flyer.height}
+              src={goodDrinks.flyer.src}
+              alt={`${goodDrinks.name} flyer. All event details are listed on this page.`}
+              width={goodDrinks.flyer.width}
+              height={goodDrinks.flyer.height}
               sizes="(min-width: 900px) 40vw, 100vw"
               className="w-full h-auto rounded-[var(--radius)] shadow-[var(--shadow-paper)]"
               priority
@@ -81,31 +84,44 @@ export default async function GoodDrinksEventPage() {
             <span className="sr-only">Open the full-size flyer</span>
           </a>
           <div className="stack">
-            <p className="badge">
-              <span className="dot" />
-              Community fundraiser · Indoor
-            </p>
+            {isLive ? (
+              <p className="badge">
+                <span className="dot" />
+                Community fundraiser · Indoor
+              </p>
+            ) : (
+              <span className="badge badge-done justify-self-start">Completed · {goodDrinks.shortDate}</span>
+            )}
             <h1 className="display">
               Good Drinks, <span className="hl">Brighter</span> Futures
             </h1>
             <p className="lead">
-              Coffee, tea, board games and connection. Spend the afternoon with neighbors and friends while raising{" "}
-              {formatUsd(liveCampaign.goalCents)} for students in Ethiopia.
+              {isLive ? (
+                <>
+                  Coffee, tea, board games and connection. Spend the afternoon with neighbors and friends while raising{" "}
+                  {formatUsd(goodDrinks.goalCents)} for students in Ethiopia.
+                </>
+              ) : (
+                <>
+                  Thank you to everyone who joined us for coffee, tea, board games and connection
+                  {progress ? <>, and helped raise {formatUsd(progress.raisedCents)} for students in Ethiopia</> : null}.
+                </>
+              )}
             </p>
             <span className="script">Same table. Brighter futures.</span>
 
             <FactList
               items={[
-                { icon: "calendar", label: "Date", value: liveCampaign.dateLabel },
-                { icon: "clock", label: "Time", value: liveCampaign.time },
+                { icon: "calendar", label: "Date", value: goodDrinks.dateLabel },
+                { icon: "clock", label: "Time", value: goodDrinks.time },
                 {
                   icon: "pin",
                   label: "Place",
                   value: (
                     <>
-                      {liveCampaign.venue}
+                      {goodDrinks.venue}
                       <br />
-                      {liveCampaign.street}, {liveCampaign.city}
+                      {goodDrinks.street}, {goodDrinks.city}
                     </>
                   ),
                 },
@@ -113,16 +129,18 @@ export default async function GoodDrinksEventPage() {
               ]}
             />
 
-            <div className="btn-row">
-              <a className="btn btn-outline btn-sm" href={liveCampaign.calendarFile} download>
-                <Icon name="calendar" />
-                Add to calendar
-              </a>
-              <a className="btn btn-outline btn-sm" href={liveCampaign.mapUrl} target="_blank" rel="noopener noreferrer">
-                <Icon name="pin" />
-                Open map
-              </a>
-            </div>
+            {isLive && (
+              <div className="btn-row">
+                <a className="btn btn-outline btn-sm" href={goodDrinks.calendarFile} download>
+                  <Icon name="calendar" />
+                  Add to calendar
+                </a>
+                <a className="btn btn-outline btn-sm" href={goodDrinks.mapUrl} target="_blank" rel="noopener noreferrer">
+                  <Icon name="pin" />
+                  Open map
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -133,28 +151,31 @@ export default async function GoodDrinksEventPage() {
             <div className="split items-center">
               <div className="stack">
                 <h2 id="goal-title" className="h2">
-                  Help us reach {formatUsd(liveCampaign.goalCents)}
+                  {isLive ? `Help us reach ${formatUsd(goodDrinks.goalCents)}` : "What we raised together"}
                 </h2>
                 <CampaignTracker
-                  goalCents={liveCampaign.goalCents}
+                  goalCents={goodDrinks.goalCents}
                   raisedCents={progress?.raisedCents ?? null}
                   donorCount={progress?.donorCount}
+                  status={goodDrinks.status}
                 />
                 <div className="btn-row-stack">
-                  <Link className="btn btn-gold" href={liveCampaign.donateHref}>
-                    Donate to this campaign
+                  <Link className="btn btn-gold" href={isLive ? goodDrinks.donateHref : "/donate"}>
+                    {isLive ? "Donate to this campaign" : "Keep supporting students"}
                   </Link>
                   <Link className="btn btn-outline" href="/donate/subscribe">
                     Give monthly
                   </Link>
                 </div>
               </div>
-              <div className="flex items-center gap-6 justify-self-center">
-                <DonateQr url={donateUrl} />
-                <p className="small muted max-w-[16em]">
-                  At the event? Scan to give from your phone in under a minute.
-                </p>
-              </div>
+              {isLive && (
+                <div className="flex items-center gap-6 justify-self-center">
+                  <DonateQr url={donateUrl} />
+                  <p className="small muted max-w-[16em]">
+                    At the event? Scan to give from your phone in under a minute.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -171,10 +192,14 @@ export default async function GoodDrinksEventPage() {
 
       <section className="section-tight band-white">
         <div className="wrap narrow stack center">
-          <h2 className="h3">Can’t make it?</h2>
-          <p className="muted">You can still give, or share the event with a friend in the DMV.</p>
+          <h2 className="h3">{isLive ? "Can’t make it?" : "Missed it?"}</h2>
+          <p className="muted">
+            {isLive
+              ? "You can still give, or share the event with a friend in the DMV."
+              : "You can still give, and follow along on Instagram for the next gathering."}
+          </p>
           <div className="btn-row justify-center">
-            <Link className="btn btn-primary" href={liveCampaign.donateHref}>
+            <Link className="btn btn-primary" href={isLive ? goodDrinks.donateHref : "/donate"}>
               Donate
             </Link>
             <a className="btn btn-outline" href={siteConfig.instagram} target="_blank" rel="noopener noreferrer">

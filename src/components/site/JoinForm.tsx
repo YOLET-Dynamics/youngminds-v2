@@ -43,8 +43,8 @@ export function JoinForm() {
         <h2 className="h2">Thanks for joining.</h2>
         <p className="muted">We’ll be in touch within a week. In the meantime, come say hello at our next event.</p>
         <div className="btn-row">
-          <Link className="btn btn-primary" href={liveCampaign.href}>
-            See upcoming event
+          <Link className="btn btn-primary" href={liveCampaign?.href ?? "/events"}>
+            {liveCampaign ? "See upcoming event" : "See our events"}
           </Link>
           <a className="btn btn-outline" href={siteConfig.instagram} target="_blank" rel="noopener noreferrer">
             Follow on Instagram

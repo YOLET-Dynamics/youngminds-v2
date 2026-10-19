@@ -9,7 +9,7 @@ const hiddenOn = ["/donate", "/subscriptions", "/privacy", "/terms"];
 /** Mobile-only donate bar for the live campaign. Hidden where it would compete with a form. */
 export function StickyDonate() {
   const pathname = usePathname();
-  if (hiddenOn.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))) {
+  if (!liveCampaign || hiddenOn.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))) {
     return null;
   }
 

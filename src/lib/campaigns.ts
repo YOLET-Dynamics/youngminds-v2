@@ -22,12 +22,30 @@ export function parseDesignation(value: string | string[] | undefined): Designat
   return typeof value === "string" && Object.hasOwn(designations, value) ? (value as DesignationSlug) : undefined;
 }
 
-export const liveCampaign = {
+type CampaignStatus = "live" | "complete";
+
+/** What a campaign tracker counts. Gifts tagged with the campaign slug always count. */
+export type CampaignCounting = {
+  slug: DesignationSlug;
+  /**
+   * Also count untagged one-time Stripe gifts made in this window (ISO instants, `until` exclusive).
+   * Use it only when donors gave through general donate links during the campaign.
+   */
+  untaggedWindow?: { from: string; until: string };
+  /** Gifts received outside Stripe, such as cash, Zelle or checks. */
+  offlineCents: number;
+};
+
+export const goodDrinks = {
   slug: "good-drinks",
+  status: "complete" as CampaignStatus,
   name: "Good Drinks, Brighter Futures",
   href: "/events/good-drinks-brighter-futures",
   donateHref: "/donate?campaign=good-drinks",
   goalCents: 500_000,
+  // Event-day gifts went through the general donate page before every Donate button was attributed.
+  untaggedWindow: { from: "2026-10-15T00:00:00-04:00", until: "2026-10-20T00:00:00-04:00" },
+  offlineCents: 0,
   dateLabel: "Saturday, October 17, 2026",
   shortDate: "Sat, Oct 17",
   time: "2:00–5:00 PM",
@@ -44,6 +62,9 @@ export const liveCampaign = {
     height: 1536,
   },
 } as const;
+
+/** The campaign every Donate button supports while it runs; null between campaigns. */
+export const liveCampaign = goodDrinks.status === "live" ? goodDrinks : null;
 
 export const pastCampaigns = [
   {
